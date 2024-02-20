@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login System</title>
+</head>
+<body>
+    <div>
+        <label for="action">Do you want to add or remove acticity?</label>
+        <input type="text" id="action" placeholder="Enter 'add' or 'remove'">
+    </div>
+    <div id="add" style="display: none;">
+        <input type="text" id="Month" placeholder="Enter month">
+        <input type="text" id="Date" placeholder="Enter date">
+        <input type="time" id="Start" placeholder="Enter start time">
+        <input type="time" id="End" placeholder="Enter end time">
+        <input type="text" id="Acticity" placeholder="Enter activity">
+        <button onclick="add()">Add_activity</button>
+    </div>
+    <div id="remove" style="display: none;">
+        <input type="text" id="Month" placeholder="Enter month">
+        <input type="text" id="Date" placeholder="Enter date">
+        <input type="time" id="Start" placeholder="Enter start time">
+        <input type="time" id="End" placeholder="Enter end time">
+        <input type="text" id="Acticity" placeholder="Enter activity">
+        <button onclick="remove()">Remove_activity</button>
+    </div>
+    <p id="message"></p>
+
+    <script src="LifeHub_kalender.js"></script>
+</body>
+</html>
