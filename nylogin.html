@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login System</title>
+</head>
+<body>
+    <div>
+        <label for="action">Do you want to login (l) or create a new user (c)?</label>
+        <input type="text" id="action" placeholder="Enter 'l' or 'c'">
+    </div>
+    <div id="loginForm" style="display: none;">
+        <input type="text" id="loginUsername" placeholder="Enter username">
+        <input type="password" id="loginPassword" placeholder="Enter password">
+        <button onclick="login()">Login</button>
+    </div>
+    <div id="createForm" style="display: none;">
+        <input type="text" id="createUsername" placeholder="Enter new username">
+        <input type="password" id="createPassword" placeholder="Enter new password">
+        <button onclick="createUser()">Create User</button>
+    </div>
+    <div id="loggedInOptions" style="display: none;">
+        <button onclick="deleteUser()">Delete User</button>
+        <input type="text" id="userString" placeholder="Enter string to save">
+        <button onclick="saveString()">Save String</button>
+    </div>
+    <p id="message"></p>
+
+    <script src="nyscript.js"></script>
+</body>
+</html>
