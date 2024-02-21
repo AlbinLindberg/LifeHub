@@ -7,24 +7,24 @@
 </head>
 <body>
     <div>
-        <label for="action">Do you want to add or remove acticity?</label>
-        <input type="text" id="action" placeholder="Enter 'add' or 'remove'">
+        <label for="action">Do you want to add or remove activity?</label>
+        <input type="text" id="action" placeholder="Enter 'add' or 'remove'" onkeypress="handleActionKeyPress(event)">
     </div>
     <div id="add" style="display: none;">
-        <input type="text" id="Month" placeholder="Enter month">
-        <input type="text" id="Date" placeholder="Enter date">
-        <input type="time" id="Start" placeholder="Enter start time">
-        <input type="time" id="End" placeholder="Enter end time">
-        <input type="text" id="Acticity" placeholder="Enter activity">
-        <button onclick="add()">Add_activity</button>
+        <input type="text" id="Month_a" placeholder="Enter month">
+        <input type="text" id="Date_a" placeholder="Enter date">
+        <input type="time" id="Start_a" placeholder="Enter start time">
+        <input type="time" id="End_a" placeholder="Enter end time">
+        <input type="text" id="Activity_a" placeholder="Enter activity">
+        <button onclick="add()">Add activity</button> 
     </div>
     <div id="remove" style="display: none;">
-        <input type="text" id="Month" placeholder="Enter month">
-        <input type="text" id="Date" placeholder="Enter date">
-        <input type="time" id="Start" placeholder="Enter start time">
-        <input type="time" id="End" placeholder="Enter end time">
-        <input type="text" id="Acticity" placeholder="Enter activity">
-        <button onclick="remove()">Remove_activity</button>
+        <input type="text" id="Month_r" placeholder="Enter month">
+        <input type="text" id="Date_r" placeholder="Enter date">
+        <input type="time" id="Start_r" placeholder="Enter start time">
+        <input type="time" id="End_r" placeholder="Enter end time">
+        <input type="text" id="Activity_r" placeholder="Enter activity">
+        <button onclick="remove()">Remove activity</button> 
     </div>
     <p id="message"></p>
 
