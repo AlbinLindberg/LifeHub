@@ -18,18 +18,28 @@
         return { keys: new Array(length), data: new Array(length), 
         probe, size: 0 };
     }
+    function ph_delete<K, V>(tab: ProbingHashtable<K,V>, key: K): boolean {
+        const index = probe_from(tab, key, 0);
+        if (index === undefined) {
+            return false;
+         } else { 
+            tab.keys[index] = null;
+            tab.size = tab.size - 1;
+            return true;
+        }
+    }
 
     function probe_from<K, V>({keys, probe}: ProbingHashtable<K,V>, 
         key: K, i: number): number | undefined {
-function step(i: number): number | undefined {
-const index = probe(keys.length, key, i);
-return i === keys.length || keys[index] === undefined
- ? undefined
-: keys[index] === key
- ? index
-: step(i + 1);
-}
-return step(i);
+        function step(i: number): number | undefined {
+            const index = probe(keys.length, key, i);
+            return i === keys.length || keys[index] === undefined
+            ? undefined
+            : keys[index] === key
+            ? index
+            : step(i + 1);
+        }
+        return step(i);
 }
 
 function ph_insert<K, V>(tab: ProbingHashtable<K,V>, key: K, value: V): boolean {
@@ -41,6 +51,7 @@ function ph_insert<K, V>(tab: ProbingHashtable<K,V>, key: K, value: V): boolean 
     }
     function insertFrom(i: number): boolean {
         const index = tab.probe(tab.keys.length, key, i);
+        showMessage(JSON.stringify(tab.keys.length));
         if (tab.keys[index] === key || tab.keys[index] === undefined) {
             return insertAt(index);
         } else if (tab.keys[index] === null) {
@@ -91,7 +102,7 @@ function ph_insert<K, V>(tab: ProbingHashtable<K,V>, key: K, value: V): boolean 
         let sum = 0;
         for (let i = 0; i < str.length; i = i + 1) {
         sum = sum + str.charCodeAt(i);
-    }
+        }
     return sum;
     }
 
@@ -105,12 +116,10 @@ function ph_insert<K, V>(tab: ProbingHashtable<K,V>, key: K, value: V): boolean 
     }
 
     function makeData(month: string, date: string, start: string, end: string, activity: string): void {
-        const hashfunc: HashFunction<number> = key => key;
-        const data_con = localStorage.getItem('data');
+        const hashfunc: HashFunction<number> = key => key //* string_to_number(activity) - string_to_number(month);
+        const data_con: string = localStorage.getItem('data') as string;
         const data: ActivityTable = data_con ? JSON.parse(data_con) : ph_empty(10, probe_linear(hashfunc));
-        data.probe = hashfunc;
-        //showMessage(JSON.stringify(data));
-        //showMessage(JSON.stringify(data.probe));
+        data.probe = probe_linear(hashfunc);
         const aktivitet: Activity = {
             Month: month,
             Date: date,
@@ -118,32 +127,10 @@ function ph_insert<K, V>(tab: ProbingHashtable<K,V>, key: K, value: V): boolean 
             End: end, 
             Activity: activity
         };
-        const id: number = (string_to_number(activity) % string_to_number(month)) - parseInt(date);
+        //const id: number = parseInt(date);
+        const id: number = (string_to_number(activity) + string_to_number(month)) - parseInt(date);
+        //const hash_id: number = hashfunc(id);
         showMessage(JSON.stringify(id));
-        ph_insert(data, id, aktivitet);
-        localStorage.setItem('data', JSON.stringify(data));
-    }
-
-    function makeData2(month: string, date: string, start: string, end: string, activity: string): void {
-        const hashfunc: HashFunction<number> = key => key % 10;
-        const probingFunction = probe_linear(hashfunc); // Skapa en probing funktion
-        const data: ActivityTable = localStorage.getItem('data') ? JSON.parse(localStorage.getItem('data') as string) : {
-            keys: new Array(20),
-            data: new Array(20),
-            //probe: probingFunction, // Tilldela probing funktionen till 'probe'
-            size: 0
-        };
-        
-        //showMessage(JSON.stringify(data.probe));
-        const aktivitet: Activity = {
-            Month: month,
-            Date: date,
-            Start: start,
-            End: end,
-            Activity: activity
-        };
-        const id: number = (string_to_number(activity) % string_to_number(date)) - parseInt(month);
-    
         ph_insert(data, id, aktivitet);
         localStorage.setItem('data', JSON.stringify(data));
     }
@@ -179,37 +166,26 @@ function ph_insert<K, V>(tab: ProbingHashtable<K,V>, key: K, value: V): boolean 
             //const start_value: string = start.value;
             //const end_value: string = end.value; 
             const activity_value: string = activity.value;
-            const id: number = (string_to_number(activity_value) % string_to_number(date_value)) - parseInt(month_value);
-            const data: ActivityTable = localStorage.getItem('data') ? JSON.parse(localStorage.getItem('data') as string) :  "There is no data hahahaha";
+            //const id: number = (string_to_number(activity_value) % string_to_number(month_value)) - parseInt(date_value);
+            const id: number = (string_to_number(activity_value) + string_to_number(month_value)) - parseInt(date_value);
+            const hashfunc: HashFunction<number> = key => key //* string_to_number(activity) - string_to_number(month);
+            const data_con: string = localStorage.getItem('data') as string;
+            const data: ActivityTable = data_con ? JSON.parse(data_con) : ph_empty(10, probe_linear(hashfunc));
+            showMessage(JSON.stringify(data));
+            data.probe = probe_linear(hashfunc);
+            console.log(JSON.stringify(data));
+            console.log(JSON.stringify(id));
+            console.log(JSON.stringify(ph_lookup(data, id)));
             if (ph_lookup(data, id)) {
                 showMessage("du ska bli borttAGEN HALSGUGGEN :)))))")
+                ph_delete(data, id);
+                localStorage.setItem('data', JSON.stringify(data));
             }
         }
 
     }
 
-    /*
-    (document.getElementById("action") as HTMLInputElement).addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            const action: string = (document.getElementById("action") as HTMLInputElement).value;
-            const login_form: HTMLElement | null = document.getElementById("add");
-            const create_form: HTMLElement | null = document.getElementById("remove");
-            const messageElement: HTMLElement | null = document.getElementById("message");
 
-            if (login_form && create_form && messageElement) {
-                if (action === "add") {
-                    login_form.style.display = "block";
-                    create_form.style.display = "none";
-                } else if (action === "remove") {
-                    login_form.style.display = "none";
-                    create_form.style.display = "block";
-                } else {
-                    messageElement.innerText = "Invalid option. Please choose 'l' for login or 'c' for create user.";
-                }
-            }
-        }
-    });
-    */
 
     
     function handleActionKeyPress(event: KeyboardEvent): void {
@@ -227,7 +203,7 @@ function ph_insert<K, V>(tab: ProbingHashtable<K,V>, key: K, value: V): boolean 
                     addElement.style.display = "none";
                     removeElement.style.display = "block";
                 } else if (messageElement) {
-                    messageElement.innerText = "Invalid option. Please choose 'l' for login or 'c' for create user.";
+                    messageElement.innerText = "Invalid option. Please choose 'add' to add activity or 'remove' to remove activity";
                 }
             }
         }
