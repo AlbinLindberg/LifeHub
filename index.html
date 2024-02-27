@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <title>Calendar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+</head>
+
+<body>
+    <div id = "start" style = "display: block;">
+        <label for="action1">Do you want to login (l) or create a new user (c)?</label>
+        <input type="text" id="action1" placeholder="Enter 'l' or 'c'" onkeypress="handleActionKeyPress1(event)">
+    </div>
+    <div id="loginForm" style="display: none;">
+        <input type="text" id="loginUsername" placeholder="Enter username">
+        <input type="password" id="loginPassword" placeholder="Enter password">
+        <button onclick="login()">Login</button>
+    </div>
+    <div id="createForm" style="display: none;">
+        <input type="text" id="createUsername" placeholder="Enter new username">
+        <input type="password" id="createPassword" placeholder="Enter new password">
+        <button onclick="createUser()">Create User</button>
+    </div>
+    <p id="message1"></p>
+
+
+    <div id = "what" style="display: none;">
+        <label class="question" for="action2">Do you want to add or remove activity?</label>
+        <select id="action2">
+            <option value="add">Add activity</option>
+            <option value="remove">Remove activity</option>
+            <option value="search">Search activity</option>
+        </select>
+        
+    </div>
+    <div id="add" style="display: none;">
+        <input type="text" id="Month_a" placeholder="Enter month">
+        <input type="text" id="Date_a" placeholder="Enter date">
+        <input type="time" id="Start_a" placeholder="Enter start time">
+        <input type="time" id="End_a" placeholder="Enter end time">
+        <input type="text" id="Activity_a" placeholder="Enter activity">
+        <button onclick="add()">Add activity</button> 
+    </div>
+    <div id="remove" style="display: none;">
+        <input type="text" id="Month_r" placeholder="Enter month">
+        <input type="text" id="Date_r" placeholder="Enter date">
+        <input type="time" id="Start_r" placeholder="Enter start time">
+        <input type="time" id="End_r" placeholder="Enter end time">
+        <input type="text" id="Activity_r" placeholder="Enter activity">
+        <button onclick="remove()">Remove activity</button> 
+    </div>
+    <div id="search" style="display: none;">
+        <input type="text" id="search_month" placeholder="Enter month">
+        <input type="text" id="search_date" placeholder="Enter date">
+        <button onclick="search()">Search activity</button> 
+    </div>
+    <p id="message2"></p>
+
+
+    <div id = "calendar" class="calendar-container">
+        <header class="calendar-header">
+            <p class="calendar-current-date"></p>
+            <div class="calendar-navigation">
+                <span id="calendar-prev" class="material-symbols-rounded">chevron_left</span>
+                <span id="calendar-next" class="material-symbols-rounded">chevron_right</span>
+            </div>
+        </header>
+        <div class="calendar-body">
+            <ul class="calendar-weekdays">
+                <li>Sun</li>
+                <li>Mon</li>
+                <li>Tue</li>
+                <li>Wed</li>
+                <li>Thu</li>
+                <li>Fri</li>
+                <li>Sat</li>
+            </ul>
+            <ul class="calendar-dates"></ul>
+        </div>
+    </div>
+
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        
+        body {
+            
+            background: white;
+            min-height: 100vh;
+            padding: 0 10px;
+            align-items:  center;
+            justify-content: center;
+        }
+        label {
+            
+            padding: 100px;
+        }
+        
+        
+        
+        .calendar-container {
+            display: none;
+            background: #fff;
+            width: 1000px;
+            min-height: 100px;
+            border-radius: 10px;
+            box-shadow: 0 15px 40px red;
+            margin-top: 160px;
+            margin-left: 25px;
+        }
+        
+        .calendar-container header {
+            display: flex;
+            align-items: center;
+            padding: 25px 30px 10px;
+            justify-content: space-between;
+        }
+        
+        header .calendar-navigation {
+            display: flex;
+        }
+        
+        header .calendar-navigation span {
+            height: 38px;
+            width: 38px;
+            margin: 0 1px;
+            cursor: pointer;
+            text-align: center;
+            line-height: 38px;
+            border-radius: 50%;
+            user-select: none;
+            color: gray;
+            font-size: 1.9rem;
+        }
+        
+        .calendar-navigation span:last-child {
+            padding-left: 10px;
+        }
+        
+        header .calendar-navigation span:hover {
+            background: #f2f2f2;
+        }
+        
+        header .calendar-current-date {
+            font-weight: 500;
+            font-size: 1.45rem;
+        }
+        
+        .calendar-body {
+            padding: 20px;
+        }
+        
+        .calendar-body ul {
+            list-style: none;
+            flex-wrap: wrap;
+            display: flex;
+            text-align: center;
+        }
+        
+        .calendar-body .calendar-dates {
+            margin-bottom: 20px;
+        }
+        
+        .calendar-body li {
+            width: calc(100% / 7);
+            font-size: 1.07rem;
+            color: #414141;
+        }
+        
+        .calendar-body .calendar-weekdays li {
+            cursor: default;
+            font-weight: 500;
+        }
+        
+        .calendar-body .calendar-dates li {
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+            cursor: pointer;
+        }
+        
+        .calendar-dates li.inactive {
+            color: #aaa;
+        }
+        
+        .calendar-dates li.active {
+            color: #fff;
+        }
+        
+        .calendar-dates li::before {
+            position: absolute;
+            content: "";
+            z-index: -1;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .calendar-dates li.active::before {
+            background: #6332c5;
+        }
+        
+        .calendar-dates li:not(.active):hover::before {
+            background: #e4e1e1;
+        }
+    </style>
+    <script src = "lifehub_kalender.js"></script>
+</body>
+
+</html>
