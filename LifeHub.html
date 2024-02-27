@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login System</title>
+</head>
+<body>
+    <div id="login">
+        <div>
+            <label for="action">Do you want to login (l) or create a new user (c)?</label>
+            <input type="text" id="action" placeholder="Enter 'l' or 'c'">
+        </div>
+        <div id="loginForm" style="display: none;">
+            <input type="text" id="loginUsername" placeholder="Enter username">
+            <input type="password" id="loginPassword" placeholder="Enter password">
+            <button onclick="login()">Login</button>
+        </div>
+        <div id="createForm" style="display: none;">
+            <input type="text" id="createUsername" placeholder="Enter new username">
+            <input type="password" id="createPassword" placeholder="Enter new password">
+            <button onclick="createUser()">Create User</button>
+        </div>
+    </div>
+
+    <div id="logout" style="display: none;">
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <div id="kalender" style="display: none;">
+        <label for="action2">Do you want to add, remove, or search for activity?</label>
+        <select id="action2" onchange="handleActionChange()">
+            <option value="add">Add activity</option>
+            <option value="remove">Remove activity</option>
+            <option value="search">Search activity</option>
+        </select>
+    </div>
+    <div id="add" style="display: none;">
+        <input type="text" id="Month_a" placeholder="Enter month">
+        <input type="text" id="Date_a" placeholder="Enter date">
+        <input type="time" id="Start_a" placeholder="Enter start time">
+        <input type="time" id="End_a" placeholder="Enter end time">
+        <input type="text" id="Activity_a" placeholder="Enter activity">
+        <button onclick="add()">Add activity</button> 
+    </div>
+    <div id="remove" style="display: none;">
+        <input type="text" id="Month_r" placeholder="Enter month">
+        <input type="text" id="Date_r" placeholder="Enter date">
+        <input type="time" id="Start_r" placeholder="Enter start time">
+        <input type="time" id="End_r" placeholder="Enter end time">
+        <input type="text" id="Activity_r" placeholder="Enter activity">
+        <button onclick="remove()">Remove activity</button> 
+    </div>
+    <div id="search" style="display: none;">
+        <input type="text" id="search_month" placeholder="Enter month">
+        <input type="text" id="search_date" placeholder="Enter date">
+        <button onclick="search()">Search activity</button> 
+    </div>
+    <p id="message"></p>
+
+
+
+    <script src="LifeHub.js"></script>
+</body>
+</html>
