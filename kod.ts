@@ -189,14 +189,14 @@ function remove(): void {
 function searchActivity(month: string, date: string): Activity[] {
     const hashfunc: HashFunction<number> = key => key; //* string_to_number(activity) - string_to_number(month);
     let data: ActivityTable = localStorage.getItem('data') ? JSON.parse(localStorage.getItem('data') as string) : ph_empty(10, probe_linear(hashfunc));
-    data.probe = hashfunc;
+    data.probe = probe_linear(hashfunc);
     const activities: Activity[] = [];
-    console.log(data);
+    
      // Add this line to check the retrieved data
 
     for (let i = 0; i < data.keys.length; i++) {
         const key = data.keys[i];
-        console.log("key", key);
+        
         if (key !== null && key !== undefined) {
             const storedActivity = ph_lookup(data, key);
             console.log(key, storedActivity);
@@ -208,6 +208,54 @@ function searchActivity(month: string, date: string): Activity[] {
     }
     
     return activities; // Return array of activities for the specified date
+}
+
+function searchActivity2(month: string): Activity[] {
+    const hashfunc: HashFunction<number> = key => key; //* string_to_number(activity) - string_to_number(month);
+    let data: ActivityTable = localStorage.getItem('data') ? JSON.parse(localStorage.getItem('data') as string) : ph_empty(10, probe_linear(hashfunc));
+    data.probe = probe_linear(hashfunc);
+    const activities2: Activity[] = [];
+    
+     // Add this line to check the retrieved data
+
+    for (let i = 0; i < data.keys.length; i++) {
+        const key = data.keys[i];
+        
+        if (key !== null && key !== undefined) {
+            const storedActivity = ph_lookup(data, key);
+            console.log(key, storedActivity);
+            
+            if (storedActivity && storedActivity.Month === month) {
+                activities2.push(storedActivity);
+            }
+        }
+    }
+    
+    return activities2; // Return array of activities for the specified date
+}
+
+function searchActivity3(activity: string): Activity[] {
+    const hashfunc: HashFunction<number> = key => key; //* string_to_number(activity) - string_to_number(month);
+    let data: ActivityTable = localStorage.getItem('data') ? JSON.parse(localStorage.getItem('data') as string) : ph_empty(10, probe_linear(hashfunc));
+    data.probe = probe_linear(hashfunc);
+    const activities3: Activity[] = [];
+    
+     // Add this line to check the retrieved data
+
+    for (let i = 0; i < data.keys.length; i++) {
+        const key = data.keys[i];
+        
+        if (key !== null && key !== undefined) {
+            const storedActivity = ph_lookup(data, key);
+            console.log(key, storedActivity);
+            
+            if (storedActivity && storedActivity.Activity === activity) {
+                activities3.push(storedActivity);
+            }
+        }
+    }
+    
+    return activities3; // Return array of activities for the specified date
 }
 
 
@@ -233,14 +281,56 @@ function search(): void {
     }
 }
 
+function search2(): void {
+    const searchMonthInput: HTMLInputElement | null = document.getElementById("search_month2") as HTMLInputElement;
+    const messageElement: HTMLElement | null = document.getElementById("message");
+
+    if (searchMonthInput && messageElement) {
+        const searchMonth: string = searchMonthInput.value;
+        const activities: Activity[] = searchActivity3(searchMonth);
+
+        if (activities.length > 0) {
+            let message = "Activities found for " + searchMonth + " " + ":\n";
+            activities.forEach(activity => {
+                message += "Date: " + activity.Date + ", Start: " + activity.Start + ", End: " + activity.End + ", Activity: " + activity.Activity + "\n";
+            });
+            messageElement.innerText = message;
+        } else {
+            messageElement.innerText = "No activities found for " + searchMonth + " " ;
+        }
+    }
+}
+
+function search3(): void {
+    const searchActivityInput: HTMLInputElement | null = document.getElementById("search_activity") as HTMLInputElement;
+    const messageElement: HTMLElement | null = document.getElementById("message");
+
+    if (searchActivityInput && messageElement) {
+        const searchActivity: string = searchActivityInput.value;
+        const activities: Activity[] = searchActivity3(searchActivity);
+
+        if (activities.length > 0) {
+            let message = "Activities found for " + searchActivity + " " + ":\n";
+            activities.forEach(activity => {
+                message += "Start: " + activity.Start + ", End: " + activity.End + ", Month: " + activity.Month + ", Date: " + activity.Date + "\n";
+            });
+            messageElement.innerText = message;
+        } else {
+            messageElement.innerText = "No activities found for " + searchActivity + " " ;
+        }
+    }
+}
+
 function handleActionChange(): void {
     const actionElement: HTMLSelectElement | null = document.getElementById("action") as HTMLSelectElement;
     const addElement: HTMLElement | null = document.getElementById("add");
     const removeElement: HTMLElement | null = document.getElementById("remove");
     const searchElement: HTMLElement | null = document.getElementById("search");
+    const search2Element: HTMLElement | null = document.getElementById("search2");
+    const search3Element: HTMLElement | null = document.getElementById("search3");
     const messageElement: HTMLElement | null = document.getElementById("message");
 
-    if (actionElement && addElement && removeElement && searchElement && messageElement) {
+    if (actionElement && addElement && removeElement && searchElement && search2Element && search3Element && messageElement) {
         const selectedAction: string = actionElement.value;
 
         // Reset message
@@ -250,19 +340,39 @@ function handleActionChange(): void {
             addElement.style.display = "block";
             removeElement.style.display = "none";
             searchElement.style.display = "none";
+            search2Element.style.display = "none";
+            search3Element.style.display = "none";
         } else if (selectedAction === "remove") {
             addElement.style.display = "none";
             removeElement.style.display = "block";
             searchElement.style.display = "none";
+            search2Element.style.display = "none";
+            search3Element.style.display = "none";
         } else if (selectedAction === "search") {
             addElement.style.display = "none";
             removeElement.style.display = "none";
             searchElement.style.display = "block";
+            search2Element.style.display = "none";
+            search3Element.style.display = "none";
+        } else if (selectedAction === "search2") {
+            addElement.style.display = "none";
+            removeElement.style.display = "none";
+            searchElement.style.display = "none";
+            search2Element.style.display = "block";
+            search3Element.style.display = "none";
+        } else if (selectedAction === "search3") {
+            addElement.style.display = "none";
+            removeElement.style.display = "none";
+            searchElement.style.display = "none";
+            search2Element.style.display = "none";
+            search3Element.style.display = "block";
         } else {
             // Invalid option
             addElement.style.display = "none";
             removeElement.style.display = "none";
             searchElement.style.display = "none";
+            search3Element.style.display = "none";
+            search2Element.style.display = "none";
             messageElement.innerText = "Invalid option. Please choose 'add', 'remove', or 'search'.";
         }
     }
