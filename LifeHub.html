@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login System</title>
+    
 </head>
+
+
 <body>
     <div id="login">
         <div>
@@ -28,38 +31,154 @@
     </div>
 
     <div id="kalender" style="display: none;">
+    <div>
         <label for="action2">Do you want to add, remove, or search for activity?</label>
         <select id="action2" onchange="handleActionChange()">
             <option value="add">Add activity</option>
             <option value="remove">Remove activity</option>
-            <option value="search">Search activity</option>
+            <option value="search">Search date</option>
+            <option value="search2">Search month</option>
+            <option value="search3">Search activity</option>
         </select>
     </div>
     <div id="add" style="display: none;">
-        <input type="text" id="Month_a" placeholder="Enter month">
-        <input type="text" id="Date_a" placeholder="Enter date">
+        <select id="Month_a">
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+        </select>
+        <select id="Date_a">
+            <!-- Days will be added dynamically via JavaScript -->
+        </select>
         <input type="time" id="Start_a" placeholder="Enter start time">
         <input type="time" id="End_a" placeholder="Enter end time">
         <input type="text" id="Activity_a" placeholder="Enter activity">
         <button onclick="add()">Add activity</button> 
     </div>
     <div id="remove" style="display: none;">
-        <input type="text" id="Month_r" placeholder="Enter month">
-        <input type="text" id="Date_r" placeholder="Enter date">
-        <input type="time" id="Start_r" placeholder="Enter start time">
-        <input type="time" id="End_r" placeholder="Enter end time">
+        <select id="Month_r">
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+        </select>
+        <select id="Date_r">
+            <!-- Days will be added dynamically via JavaScript -->
+        </select>
         <input type="text" id="Activity_r" placeholder="Enter activity">
         <button onclick="remove()">Remove activity</button> 
     </div>
     <div id="search" style="display: none;">
-        <input type="text" id="search_month" placeholder="Enter month">
-        <input type="text" id="search_date" placeholder="Enter date">
+        <select id="search_month">
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+        </select>
+        <select id="search_date">
+            <!-- Days will be added dynamically via JavaScript -->
+        </select>
         <button onclick="search()">Search activity</button> 
     </div>
+    <div id="search2" style="display: none;">
+        <select id="search_month2">
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+        </select>
+        <button onclick="search2()">Search activity</button>
+    </div>
+    <div id="search3" style="display: none;">
+        <input type="text" id="search_activity" placeholder="Enter activity">
+        <button onclick="search3()">Search activity</button> 
+    </div>
+
+    <button onclick="clearCalendar()">Clear Calendar</button>
+    </div>
+
     <p id="message"></p>
 
-
-
     <script src="LifeHub.js"></script>
+    <script>
+        // JavaScript code to populate days dynamically based on selected month
+        document.addEventListener("DOMContentLoaded", function() {
+            var monthSelect = document.getElementById("Month_a");
+            var dateSelect = document.getElementById("Date_a");
+            var monthOptions = document.getElementById("Month_r");
+            var dateOptions = document.getElementById("Date_r");
+            var searchMonthOptions = document.getElementById("search_month");
+            var searchDateOptions = document.getElementById("search_date");
+
+            monthSelect.addEventListener("change", function() {
+                populateDays(monthSelect.value, dateSelect);
+            });
+
+            monthOptions.addEventListener("change", function() {
+                populateDays(monthOptions.value, dateOptions);
+            });
+
+            searchMonthOptions.addEventListener("change", function() {
+                populateDays(searchMonthOptions.value, searchDateOptions);
+            });
+
+            // Populate days function
+            function populateDays(month, dropdown) {
+                dropdown.innerHTML = "";
+                var daysInMonth = new Date(new Date().getFullYear(), getMonthIndex(month), 0).getDate();
+                for (var i = 1; i <= daysInMonth; i++) {
+                    var option = document.createElement("option");
+                    option.text = i;
+                    option.value = i;
+                    dropdown.add(option);
+                }
+            }
+
+            // Helper function to get month index
+            function getMonthIndex(month) {
+                var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                return months.indexOf(month) + 1;
+            }
+
+            // Initialize days for initial month selection
+            populateDays(monthSelect.value, dateSelect);
+            populateDays(monthOptions.value, dateOptions);
+            populateDays(searchMonthOptions.value, searchDateOptions);
+        });
+
+    </script>
 </body>
 </html>
