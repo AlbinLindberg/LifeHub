@@ -1,63 +1,98 @@
 //import * as HT from '../lib/hashtables';
 
 //import { Pair, List, head, tail, pair, is_null, list, length } from '../lib/list';
-let Global_username: string = "oooooo"
+let Global_username: string = "oooooo" // This is set to the username that is currently logged in
 
-type HashFunction<K> = (key: K) => number;
-type HashFunction1<K> = (month: K, date:K, activity:K) => number;
+export type HashFunction<K> = (key: K) => number; // The type for a hash function
 
-type ProbingFunction<K> = (length: number, key: K, i: number) => number;
+export type ProbingFunction<K> = (length: number, key: K, i: number) => number; // The type for a probing function
 
-type ProbingHashtable<K, V> = {
-    readonly keys: Array<K | null | undefined>,
-    readonly data: Array<V>,
-    probe: ProbingFunction<K>,
-    size: number // number of elements
+export type ProbingHashtable<K, V> = {                     // The type for a probing hashtable
+    readonly keys: Array<K | null | undefined>,     // readonly has been removed from probe  
+    readonly data: Array<V>,                        // because when the probing hashtable is 
+    probe: ProbingFunction<K>,                      // saved down with JSON stringify it 
+    size: number // number of elements              // becomes undefined so it has to set 
+};                                                  // every time it opens
+
+export type Activity = {               // The type for an acticity
+    Month: string,
+    Date: string
+    Start: string,
+    End: string,
+    Activity: string
 };
 
-function ph_empty<K, V>(length: number, probe: ProbingFunction<K>): ProbingHashtable<K, V> {
-    return {
-        keys: new Array(length),
-        data: new Array(length),
-        probe,
-        size: 0
-    };
+export type ActivityTable = ProbingHashtable<number, Activity>     // Type for an activity table
+
+export const hashfunc: HashFunction<number> = key => key // 
+
+/**
+ * Create an empty probing hash table
+ * @template K the type of keys
+ * @template V the type of values
+ * @param length the maximum number of elements to accomodate
+ * @param hash the hash function
+ * @precondition the key type K contains neither null nor undefined
+ * @returns an empty hash table
+ */
+export function ph_empty<K, V>(length: number, 
+    probe: ProbingFunction<K>): ProbingHashtable<K,V> {
+    return {keys: new Array(length), 
+            data: new Array(length), 
+            probe, 
+            size: 0 };
 }
 
-function ph_delete<K, V>(tab: ProbingHashtable<K, V>, key: K): boolean {
-    const index = probe_from(tab, key, 0);
-    if (index === undefined) {
-        return false;
-    } else {
-        tab.keys[index] = null;
-        tab.size = tab.size - 1;
-        return true;
-    }
-}
-
-function probe_from<K, V>({ keys, probe }: ProbingHashtable<K, V>,
-    key: K, i: number): number | undefined {
+// helper function implementing probing from a given probe index i
+function probe_from<K, V>({keys, probe}: ProbingHashtable<K,V>, 
+key: K, i: number): number | undefined {
     function step(i: number): number | undefined {
         const index = probe(keys.length, key, i);
         return i === keys.length || keys[index] === undefined
-            ? undefined
-            : keys[index] === key
-                ? index
-                : step(i + 1);
+        ? undefined
+        : keys[index] === key
+        ? index
+        : step(i + 1);
     }
     return step(i);
 }
 
-function ph_insert<K, V>(tab: ProbingHashtable<K, V>, key: K, value: V): boolean {
+
+/**
+* Search a hash table for the given key.
+* @template K the type of keys
+* @template V the type of values
+* @param table the hash table to scan
+* @param key the key to scan for
+* @returns the associated value, or undefined if it does not exist.
+*/
+export function ph_lookup<K, V>(tab: ProbingHashtable<K,V>, key: K): V | undefined {
+    const index = probe_from(tab, key, 0);
+    return index === undefined
+    ? undefined
+    : tab.data[index];
+}
+
+
+/**
+* Insert a key-value pair into a probing hash table.
+* Overwrites the existing value associated with the key, if any.
+* @template K the type of keys
+* @template V the type of values
+* @param table the hash table
+* @param key the key to insert at
+* @param value the value to insert
+* @returns true iff the insertion succeeded (the hash table was not full)
+*/
+export function ph_insert<K, V>(tab: ProbingHashtable<K,V>, key: K, value: V): boolean {
     function insertAt(index: number): true {
         tab.keys[index] = key;
         tab.data[index] = value;
         tab.size = tab.size + 1;
         return true;
-    }
+        }
     function insertFrom(i: number): boolean {
         const index = tab.probe(tab.keys.length, key, i);
-        showMessage(JSON.stringify(tab.keys.length));
         if (tab.keys[index] === key || tab.keys[index] === undefined) {
             return insertAt(index);
         } else if (tab.keys[index] === null) {
@@ -70,134 +105,32 @@ function ph_insert<K, V>(tab: ProbingHashtable<K, V>, key: K, value: V): boolean
     return tab.keys.length === tab.size ? false : insertFrom(0);
 }
 
-function ph_lookup<K, V>(tab: ProbingHashtable<K, V>, key: K): V | undefined {
+
+/**
+* Delete a key-value pair from a probing hash table.
+* @template K the type of keys
+* @template V the type of values
+* @param table the hash table
+* @param key the key to delete
+* @returns true iff the key existed
+*/
+export function ph_delete<K, V>(tab: ProbingHashtable<K,V>, key: K): boolean {
     const index = probe_from(tab, key, 0);
-    return index === undefined
-        ? undefined
-        : tab.data[index];
+    if (index === undefined) {
+        return false;
+    } else { 
+        tab.keys[index] = null;
+        tab.size = tab.size - 1;
+        return true;
+    }
 }
 
-function probe_linear<K>(hash: HashFunction<K>): ProbingFunction<K> {
+// linear probing with a given hash function
+export function probe_linear<K>(hash: HashFunction<K>): ProbingFunction<K> {
     return (length: number, key: K, i: number) => (hash(key) + i) % length;
 }
 
-/*
-    let date: Date = new Date(); // creates a new date object with the current date and time
-let year: number = date.getFullYear(); // gets the current year
-let month: number = date.getMonth(); // gets the current month (index based, 0-11)
-
-const day: HTMLElement | null = document.querySelector(".calendar-dates"); // selects the element with class "calendar-dates"
-const currdate: HTMLElement | null = document.querySelector(".calendar-current-date"); // selects the element with class "calendar-current-date"
-const prenexIcons: NodeListOf<HTMLElement> = document.querySelectorAll(".calendar-navigation span"); // selects all elements with class "calendar-navigation span"
-
-const months: string[] = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-]; // array of month names
-
-// function to generate the calendar
-const manipulate = (): void => {
-    // get the first day of the month
-    let dayone: number = new Date(year, month, 1).getDay();
-
-    // get the last date of the month
-    let lastdate: number = new Date(year, month + 1, 0).getDate();
-
-    // get the day of the last date of the month
-    let dayend: number = new Date(year, month, lastdate).getDay();
-
-    // get the last date of the previous month
-    let monthlastdate: number = new Date(year, month, 0).getDate();
-
-    let lit: string = ""; // variable to store the generated calendar HTML
-
-    // loop to add the last dates of the previous month
-    for (let i = dayone; i > 0; i--) {
-        lit += `<li class="inactive">${monthlastdate - i + 1}</li>`;
-    }
-
-    // loop to add the dates of the current month
-    for (let i = 1; i <= lastdate; i++) {
-        // check if the current date is today
-        let isToday: string = i === date.getDate() && month === new Date().getMonth() && year === new Date().getFullYear() ? "active" : "";
-        lit += `<li class="${isToday}">${i}</li>`;
-    }
-
-    // loop to add the first dates of the next month
-    for (let i = dayend; i < 6; i++) {
-        lit += `<li class="inactive">${i - dayend + 1}</li>`;
-    }
-
-    // update the text of the current date element with the formatted current month and year
-    if (currdate) currdate.innerText = `${months[month]} ${year}`;
-
-    // update the HTML of the dates element with the generated calendar
-    if (day) day.innerHTML = lit;
-};
-
-manipulate();
-
-// Attach a click event listener to each icon
-prenexIcons.forEach(icon => {
-
-    // When an icon is clicked
-    icon.addEventListener("click", () => {
-        // Check if the icon is "calendar-prev" or "calendar-next"
-        month = icon.id === "calendar-prev" ? month - 1 : month + 1;
-
-        // Check if the month is out of range
-        if (month < 0 || month > 11) {
-            // Set the date to the first day of the month with the new year
-            date = new Date(year, month, new Date().getDate());
-            // Set the year to the new year
-            year = date.getFullYear();
-            // Set the month to the new month
-            month = date.getMonth();
-        } else {
-            // Set the date to the current date
-            date = new Date();
-        }
-
-        // Call the manipulate function to update the calendar display
-        manipulate();
-    });
-});
-
-*/
-const kalender = {
-    January: [],
-    February: [],
-    Mars: [],
-    April: [],
-    May: [],
-    June: [],
-    July: [],
-    August: [],
-    September: [],
-    October: [],
-    Novemeber: [],
-    December: []
-}
-type Activity = {
-    Month: string, // the identifier as described above
-    Date: string
-    Start: string,
-    End: string,
-    Activity: string
-};
-type ActivityTable = ProbingHashtable<number, Activity>;
-
-function string_to_number(str: string) {
+export function string_to_number(str: string) {
     let sum = 0;
     for (let i = 0; i < str.length; i = i + 1) {
         sum = sum + str.charCodeAt(i);
@@ -205,7 +138,7 @@ function string_to_number(str: string) {
     return sum;
 }
 
-function showMessage(message: string): void {
+export function showMessage(message: string): void {
     const messageElement: HTMLElement | null = document.getElementById("message");
     if (messageElement) {
         messageElement.innerText = message;
@@ -214,11 +147,11 @@ function showMessage(message: string): void {
     }
 }
 
-function HashFunction(month: string, date: string, activity: string): number {
+export function Hash_Function(month: string, date: string, activity: string): number {
     return (string_to_number(activity) + string_to_number(month)) - parseInt(date);
 }
 
-function authenticate(username: string, password: string): boolean {
+export function authenticate(username: string, password: string): boolean {
     const credentials: { [key: string]: string } = localStorage.getItem('credentials') ? JSON.parse(localStorage.getItem('credentials') as string) : {};
     if (credentials && credentials.hasOwnProperty(username) && credentials[username] === password) {
         return true;
@@ -228,31 +161,7 @@ function authenticate(username: string, password: string): boolean {
 
 }
 
-/*
-function authenticate3(username: string, password: string): boolean {
-    let credentials: { [key: string]: string } | null = null;
-    try {
-        const storedCredentials = localStorage.getItem('credentials');
-        if (storedCredentials) {
-            credentials = JSON.parse(storedCredentials);
-        } else {
-            console.error("Credentials not found in local storage.");
-            return false;
-        }
-    } catch (err) {
-        console.error("Error parsing credentials:", err);
-        return false;
-    }
- 
-    if (credentials && credentials.hasOwnProperty(username) && credentials[username] === password) {
-        return true;
-    } else {
-        return false;
-    }
-}
-*/
-
-function login(): void {
+export function login(): void {
     const usernameElement: HTMLInputElement | null = document.getElementById("loginUsername") as HTMLInputElement;
     const passwordElement: HTMLInputElement | null = document.getElementById("loginPassword") as HTMLInputElement;
 
@@ -260,31 +169,28 @@ function login(): void {
     if (usernameElement && passwordElement) {
         const username: string = usernameElement.value;
         const password: string = passwordElement.value;
-        console.log("innan login", Global_username)
-        // Call the authenticate function
+        
         if (authenticate(username, password)) {
             Global_username = username;
-            console.log("etfer login", Global_username)
-            showMessage2("Welcome, " + username + "!");
-            console.log("hej");
+            showMessage("Welcome, " + username + "!");
             const kalender: HTMLInputElement | null = document.getElementById("kalender") as HTMLInputElement;
             const login: HTMLInputElement | null = document.getElementById("login") as HTMLInputElement;
             const logout: HTMLInputElement | null = document.getElementById("logout") as HTMLInputElement;
-            console.log(kalender, login);
             kalender.style.display = "block";
-
             login.style.display = "none";
-            logout.style.display = "flex";
+            logout.style.display = "block";
+            usernameElement.value = "";
+            passwordElement.value = "";
 
         } else {
-            showMessage2("Authentication failed. Please try again.");
+            showMessage("Authentication failed. Please try again.");
         }
     } else {
         console.error("Error: Unable to find username or password input elements.");
     }
 }
 
-function logout(): void {
+export function logout(): void {
     console.log("logout", Global_username);
     const kalender: HTMLInputElement | null = document.getElementById("kalender") as HTMLInputElement;
     const login: HTMLInputElement | null = document.getElementById("login") as HTMLInputElement;
@@ -293,10 +199,10 @@ function logout(): void {
     login.style.display = "block";
     logout.style.display = "none";
     showMessage(Global_username + " has been logged out");
-    Global_username = "OOOOO";
+    Global_username = "booo";
 }
 
-function showMessage2(message: string): void {
+export function showMessage2(message: string): void {
     const messageElement: HTMLElement | null = document.getElementById("message");
     if (messageElement) {
         messageElement.innerText = message;
@@ -305,75 +211,101 @@ function showMessage2(message: string): void {
     }
 }
 
-function saveCredentials(username: string, password: string): void {
+export function saveCredentials(username: string, password: string): void {
     const credentials: { [key: string]: string } = localStorage.getItem('credentials') ? JSON.parse(localStorage.getItem('credentials') as string) : {};
     credentials[username] = password;
     localStorage.setItem('credentials', JSON.stringify(credentials));
 }
 
-function createUser(): void {
+export function createUser(): void {
     const username: HTMLInputElement | null = document.getElementById("createUsername") as HTMLInputElement;
     const password: HTMLInputElement | null = document.getElementById("createPassword") as HTMLInputElement;
+    const message: HTMLElement | null = document.getElementById("message")
 
 
-    if (username && password) {
-        const user_name: string = username.value;
-        const pass_word: string = password.value;
-        saveCredentials(user_name, pass_word);
-        const mess: HTMLElement | null = document.getElementById("message");
-        if (mess) {
-            mess.innerText = "User " + user_name + " created successfully.";
+    if (username && password && message) {
+        saveCredentials(username.value, password.value);
+        message.innerText = "User " + username.value + " created successfully.";
+        username.value = "";
+        password.value = "";
         } else { }
     }
-};
 
 
-function handleActionKeyPress2(event: KeyboardEvent): void {
-    if (event.key === "Enter") {
-        const actionElement: HTMLInputElement | null = document.getElementById("action") as HTMLInputElement;
-        if (actionElement) {
-            const action: string = actionElement.value;
-            const loginFormElement: HTMLElement | null = document.getElementById("loginForm");
-            const createFormElement: HTMLElement | null = document.getElementById("createForm");
-            const messageElement: HTMLElement | null = document.getElementById("message");
-            //(document.getElementById("kalender") as HTMLElement).style.display = "none"
-            if (action === "l" && loginFormElement && createFormElement && kalender) {
-                loginFormElement.style.display = "block";
-                createFormElement.style.display = "none";
-            } else if (action === "c" && loginFormElement && createFormElement) {
-                loginFormElement.style.display = "none";
-                createFormElement.style.display = "block";
-            } else if (messageElement) {
-                messageElement.innerText = "Invalid option. Please choose 'l' for login or 'c' for create user.";
-            }
+export function login_create_selection(): void {
+    const actionElement: HTMLSelectElement | null = document.getElementById("action") as HTMLSelectElement;
+    const loginElement: HTMLElement | null = document.getElementById("loginForm");
+    const createElement: HTMLElement | null = document.getElementById("createForm");
+    const messageElement: HTMLElement | null = document.getElementById("message");
+    const login_usernameElement: HTMLInputElement | null = document.getElementById("loginUsername") as HTMLInputElement;
+    const login_passwordElement: HTMLInputElement | null = document.getElementById("loginPassword") as HTMLInputElement;
+    const create_usernameElement: HTMLInputElement | null = document.getElementById("createUsername") as HTMLInputElement;
+    const create_passwordElement: HTMLInputElement | null = document.getElementById("createPassword") as HTMLInputElement;
+
+    if (actionElement && loginElement && createElement && 
+        messageElement && login_usernameElement && login_passwordElement
+        && create_passwordElement && create_usernameElement) {
+
+        const selectedAction: string = actionElement.value;
+        console.log("hej" + selectedAction);
+
+        // Reset message
+        messageElement.innerText = "";
+
+        if (selectedAction === "loginForm") {
+            console.log(selectedAction)
+            loginElement.style.display = "block";
+            createElement.style.display = "none";
+            login_usernameElement.value = "";
+            login_passwordElement.value = "";
+        } else if (selectedAction === "createForm") {
+            console.log(selectedAction)
+            loginElement.style.display = "none";
+            createElement.style.display = "block";
+            create_usernameElement.value = "";
+            create_passwordElement.value = "";
+        } else {
+            // Invalid option
+            loginElement.style.display = "none";
+            createElement.style.display = "none";
+            messageElement.innerText = "Invalid option. Please choose 'login' or 'create user'.";
         }
     }
 }
 
-(document.getElementById("action") as HTMLInputElement).addEventListener("keypress", handleActionKeyPress2);
 
-function makeData(month: string, date: string, start: string, end: string, activity: string): void {
-    const hashfunc: HashFunction<number> = key => key //* string_to_number(activity) - string_to_number(month);
-    const hashfunc1: HashFunction1<string> = HashFunction(month, date, activity);
+document.addEventListener("DOMContentLoaded", function () {
+    const actionElement: HTMLSelectElement | null = document.getElementById("action") as HTMLSelectElement;
+    if (actionElement) {
+        actionElement.addEventListener("change", login_create_selection);
+    }
+});
+
+
+        
+
+
+//(document.getElementById("action") as HTMLInputElement).addEventListener("keypress", handleActionKeyPress2);
+
+export function makeData(month: string, date: string, start: string, end: string, activity: string): void { 
     const data_con: string = localStorage.getItem(Global_username + '_data') as string;
     const data: ActivityTable = data_con ? JSON.parse(data_con) : ph_empty(10, probe_linear(hashfunc));
     data.probe = probe_linear(hashfunc);
+
     const aktivitet: Activity = {
         Month: month,
         Date: date,
         Start: start,
         End: end,
         Activity: activity
-    };
-    //const id: number = parseInt(date);
-    const id: number = (string_to_number(activity) + string_to_number(month)) - parseInt(date);
-    //const hash_id: number = hashfunc(id);
-    //showMessage(JSON.stringify(id));
+    }
+
+    const id: number = Hash_Function(month, date, activity);
     ph_insert(data, id, aktivitet);
     localStorage.setItem(Global_username + '_data', JSON.stringify(data));
 }
 
-function clearCalendar() {
+export function clearCalendar() {
     localStorage.removeItem(Global_username + '_data');
     showMessage("Calendar cleared for " + Global_username + "." );
 }
@@ -405,14 +337,10 @@ function remove(): void {
         const date_value: string = date.value; 
         const activity_value: string = activity.value;
 
-        const id: number = (string_to_number(activity_value) + string_to_number(month_value)) - parseInt(date_value);
-        const hashfunc: HashFunction<number> = key => key
+        const id: number = Hash_Function(month_value, date_value, activity_value);
         const data_con: string = localStorage.getItem(Global_username + '_data') as string;
         const data: ActivityTable = data_con ? JSON.parse(data_con) : ph_empty(10, probe_linear(hashfunc));
         data.probe = probe_linear(hashfunc);
-        console.log(JSON.stringify(data));
-        console.log(JSON.stringify(id));
-        console.log(JSON.stringify(ph_lookup(data, id)));
         if (ph_lookup(data, id)) {
             showMessage("Aktiviteten har blivit bortagen")
             ph_delete(data, id);
@@ -422,14 +350,10 @@ function remove(): void {
 
 }
 
-function searchActivity(month: string, date: string): Activity[] {
-    const hashfunc: HashFunction<number> = key => key;
-     //* string_to_number(activity) - string_to_number(month);
+export function search_date_helper(month: string, date: string): Activity[] {
     let data: ActivityTable = localStorage.getItem(Global_username + '_data') ? JSON.parse(localStorage.getItem(Global_username + '_data') as string) : ph_empty(10, probe_linear(hashfunc));
     data.probe = probe_linear(hashfunc);
     const activities: Activity[] = [];
-    
-     // Add this line to check the retrieved data
 
     for (let i = 0; i < data.keys.length; i++) {
         const key = data.keys[i];
@@ -444,16 +368,13 @@ function searchActivity(month: string, date: string): Activity[] {
         }
     }
     
-    return activities; // Return array of activities for the specified date
+    return activities; 
 }
 
-function searchActivity2(month: string): Activity[] {
-    const hashfunc: HashFunction<number> = key => key; //* string_to_number(activity) - string_to_number(month);
+export function search_month_helper(month: string): Activity[] {
     let data: ActivityTable = localStorage.getItem(Global_username + '_data') ? JSON.parse(localStorage.getItem(Global_username + '_data') as string) : ph_empty(10, probe_linear(hashfunc));
     data.probe = probe_linear(hashfunc);
     const activities2: Activity[] = [];
-    
-     // Add this line to check the retrieved data
 
     for (let i = 0; i < data.keys.length; i++) {
         const key = data.keys[i];
@@ -468,16 +389,14 @@ function searchActivity2(month: string): Activity[] {
         }
     }
     
-    return activities2; // Return array of activities for the specified date
+    return activities2;
 }
 
-function searchActivity3(activity: string): Activity[] {
-    const hashfunc: HashFunction<number> = key => key; //* string_to_number(activity) - string_to_number(month);
+export function search_activity_helper(activity: string): Activity[] {
+
     let data: ActivityTable = localStorage.getItem(Global_username + '_data') ? JSON.parse(localStorage.getItem(Global_username + '_data') as string) : ph_empty(10, probe_linear(hashfunc));
     data.probe = probe_linear(hashfunc);
     const activities3: Activity[] = [];
-    
-     // Add this line to check the retrieved data
 
     for (let i = 0; i < data.keys.length; i++) {
         const key = data.keys[i];
@@ -492,12 +411,11 @@ function searchActivity3(activity: string): Activity[] {
         }
     }
     
-    return activities3; // Return array of activities for the specified date
+    return activities3; 
 }
 
 
-function search(): void {
-    console.log("hej");
+export function search_date(): void {
     const searchMonthInput: HTMLInputElement | null = document.getElementById("search_month") as HTMLInputElement;
     const searchDateInput: HTMLInputElement | null = document.getElementById("search_date") as HTMLInputElement;
     const messageElement: HTMLElement | null = document.getElementById("message");
@@ -505,7 +423,7 @@ function search(): void {
     if (searchMonthInput && searchDateInput && messageElement) {
         const searchMonth: string = searchMonthInput.value;
         const searchDate: string = searchDateInput.value;
-        const activities: Activity[] = searchActivity(searchMonth, searchDate);
+        const activities: Activity[] = search_date_helper(searchMonth, searchDate);
 
         if (activities.length > 0) {
             let message = "Activities found for " + searchMonth + " " + searchDate + ":\n";
@@ -519,13 +437,13 @@ function search(): void {
     }
 }
 
-function search2(): void {
+export function search_month(): void {
     const searchMonthInput: HTMLInputElement | null = document.getElementById("search_month2") as HTMLInputElement;
     const messageElement: HTMLElement | null = document.getElementById("message");
 
     if (searchMonthInput && messageElement) {
         const searchMonth: string = searchMonthInput.value;
-        const activities: Activity[] = searchActivity2(searchMonth);
+        const activities: Activity[] = search_month_helper(searchMonth);
 
         if (activities.length > 0) {
             let message = "Activities found for " + searchMonth + " " + ":\n";
@@ -539,13 +457,13 @@ function search2(): void {
     }
 }
 
-function search3(): void {
+export function search_activity(): void {
     const searchActivityInput: HTMLInputElement | null = document.getElementById("search_activity") as HTMLInputElement;
     const messageElement: HTMLElement | null = document.getElementById("message");
 
     if (searchActivityInput && messageElement) {
         const searchActivity: string = searchActivityInput.value;
-        const activities: Activity[] = searchActivity3(searchActivity);
+        const activities: Activity[] = search_activity_helper(searchActivity);
 
         if (activities.length > 0) {
             let message = "Activities found for " + searchActivity + " " + ":\n";
@@ -560,7 +478,7 @@ function search3(): void {
 }
 
 
-function handleActionChange(): void {
+export function calender_selection(): void {
     const actionElement: HTMLSelectElement | null = document.getElementById("action2") as HTMLSelectElement;
     const addElement: HTMLElement | null = document.getElementById("add");
     const removeElement: HTMLElement | null = document.getElementById("remove");
@@ -619,8 +537,8 @@ function handleActionChange(): void {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    const actionElement: HTMLSelectElement | null = document.getElementById("action") as HTMLSelectElement;
+    const actionElement: HTMLSelectElement | null = document.getElementById("action2") as HTMLSelectElement;
     if (actionElement) {
-        actionElement.addEventListener("change", handleActionChange);
+        actionElement.addEventListener("change", calender_selection);
     }
 });

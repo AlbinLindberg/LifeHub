@@ -5,16 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login System</title>
     
+    <style>
+        /* Gemensam stil för formulär */
+        input[type="text"],
+        input[type="password"],
+        select,
+        button {
+            margin: 5px;
+            padding: 5px;
+            width: 200px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* Stil för att centrera innehållet */
+        #login,
+        #logout,
+        #kalender {
+            text-align: center;
+            margin: auto;
+            margin-top: 50px;
+            width: 50%;
+        }
+
+        /* Stil för att dölja eller visa element */
+        #loginForm,
+        #createForm,
+        #logout,
+        #add,
+        #remove,
+        #search,
+        #search2,
+        #search3 {
+            display: none;
+        }
+
+        #loginForm,
+        #createForm,
+        #add,
+        #remove,
+        #search,
+        #search2,
+        #search3 {
+            display: none;
+        }
+
+        /* Stil för att visa aktivt valt element */
+        #action,
+        #action2 {
+            margin-top: 20px;
+        }
+
+        /* Stil för meddelandet */
+        #message {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+
 </head>
-
-
 <body>
     <div id="login">
         <div>
-            <label for="action">Do you want to login (l) or create a new user (c)?</label>
-            <input type="text" id="action" placeholder="Enter 'l' or 'c'">
+            <label for="action">Do you want to login or create a new user ?</label>
+            <select id="action" onchange="login_create_selection()">
+                <option value="loginForm">Login</option>
+                <option value="createForm">Create user</option>
+            </select>
         </div>
-        <div id="loginForm" style="display: none;">
+        <div id="loginForm" style="display: block;">
             <input type="text" id="loginUsername" placeholder="Enter username">
             <input type="password" id="loginPassword" placeholder="Enter password">
             <button onclick="login()">Login</button>
@@ -33,7 +94,7 @@
     <div id="kalender" style="display: none;">
     <div>
         <label for="action2">Do you want to add, remove, or search for activity?</label>
-        <select id="action2" onchange="handleActionChange()">
+        <select id="action2" onchange="calender_selection()">
             <option value="add">Add activity</option>
             <option value="remove">Remove activity</option>
             <option value="search">Search date</option>
@@ -41,7 +102,7 @@
             <option value="search3">Search activity</option>
         </select>
     </div>
-    <div id="add" style="display: none;">
+    <div id="add" style="display: block;">
         <select id="Month_a">
             <option value="January">January</option>
             <option value="February">February</option>
@@ -103,7 +164,7 @@
         <select id="search_date">
             <!-- Days will be added dynamically via JavaScript -->
         </select>
-        <button onclick="search()">Search activity</button> 
+        <button onclick="search_date()">Search activity</button> 
     </div>
     <div id="search2" style="display: none;">
         <select id="search_month2">
@@ -120,11 +181,11 @@
             <option value="November">November</option>
             <option value="December">December</option>
         </select>
-        <button onclick="search2()">Search activity</button>
+        <button onclick="search_month()">Search activity</button>
     </div>
     <div id="search3" style="display: none;">
         <input type="text" id="search_activity" placeholder="Enter activity">
-        <button onclick="search3()">Search activity</button> 
+        <button onclick="search_activity()">Search activity</button> 
     </div>
 
     <button onclick="clearCalendar()">Clear Calendar</button>
