@@ -123,7 +123,16 @@
         <input type="time" id="Start_a" placeholder="Enter start time">
         <input type="time" id="End_a" placeholder="Enter end time">
         <input type="text" id="Activity_a" placeholder="Enter activity">
-        <button onclick="add()">Add activity</button> 
+        <div id="add_button" style="display: block;">
+            <button onclick="add()">Add activity</button>
+        </div>
+        <div id="repeat_button" style="display: block;">
+            <button onclick="repeat_button()">Repeat Activity</button>
+        </div>
+        <div id="repeat", style="display: none;">
+            <input type="text" id="repeat_num" placeholder="How many weeks to repeat?">
+            <button onclick="repeat_helper()">Confirm</button>
+        </div>
     </div>
     <div id="remove" style="display: none;">
         <select id="Month_r">
@@ -190,6 +199,7 @@
 
     <button onclick="clearCalendar()">Clear Calendar</button>
     </div>
+
 
     <p id="message"></p>
 
