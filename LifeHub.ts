@@ -128,11 +128,14 @@ type Activity = {               // The type for an acticity
     Activity: string
 };
 
-type ActivityTable = ProbingHashtable<number, Activity>     // Type for an activity table
+type ActivityTable = ProbingHashtable<string, Activity>     // Type for an activity table
 
-const hashfunc: HashFunction<number> = key => key % Act_table_size //
+const hashfunc: HashFunction<string> = key => string_to_number(key); // The function that turns the key
+                                                                    // from a string to number
 
-const Act_table_size: number = 100; // constant declaring the size of an activity table 
+const prob_hash: ProbingFunction<string> = probe_linear(hashfunc); // The probing function of hashfunc
+
+const Act_table_size: number = 1000; // constant declaring the size the users calender 
 
 const monthNames = [
     "January", "February", "March", "April", "May", "June",
@@ -154,21 +157,6 @@ function string_to_number(str: string): number {
         sum = sum + str.charCodeAt(i);
     }
     return sum;
-}
-
-/**
-* Calculates the key for all activities
-* @example
-* // Hash_Function("January", "1", "Walk") returns 1128
-* @param month A string representing the month
-* @param date A string representing the date
-* @param activity A string representing the activity
-* @precondition month and activity can contain any kind of characters, 
-* date is a string that only consists of numbers.
-* @returns a number based on the calculation done in the function
-*/
-function Hash_Function(month: string, date: string, activity: string): number {
-    return (string_to_number(activity) + string_to_number(month)) - parseInt(date);
 }
 
 /**
@@ -296,8 +284,9 @@ function login(): void {
 
 /**
  * The function responsible for the logout process.
- * Makes the login menu visible
- * and sets Global_username to null.
+ * Makes the login menu visible, 
+ * sets Global_username to null and resets the calender 
+ * for the next login
  * @example
  * // When the logout button is pressed you 
  * are returned to the login/create user menu
@@ -308,9 +297,63 @@ function logout(): void {
     const kalender: HTMLInputElement | null = document.getElementById("kalender") as HTMLInputElement;
     const login: HTMLInputElement | null = document.getElementById("login") as HTMLInputElement;
     const logout: HTMLInputElement | null = document.getElementById("logout") as HTMLInputElement;
+    const action2: HTMLInputElement | null = document.getElementById("action2") as HTMLInputElement
+
+    const add: HTMLInputElement | null = document.getElementById("add") as HTMLInputElement
+    const Month_a: HTMLInputElement | null = document.getElementById("Month_a") as HTMLInputElement;
+    const Date_a: HTMLInputElement | null = document.getElementById("Date_a") as HTMLInputElement;
+    const Start_a: HTMLInputElement | null = document.getElementById("Start_a") as HTMLInputElement;
+    const End_a: HTMLInputElement | null = document.getElementById("End_a") as HTMLInputElement;
+    const Activity_a: HTMLInputElement | null = document.getElementById("Activity_a") as HTMLInputElement;
+
+    const remove: HTMLInputElement | null = document.getElementById("remove") as HTMLInputElement
+    const Month_r: HTMLInputElement | null = document.getElementById("Month_r") as HTMLInputElement;
+    const Date_r: HTMLInputElement | null = document.getElementById("Date_r") as HTMLInputElement;
+    const Activity_r: HTMLInputElement | null = document.getElementById("Activity_r") as HTMLInputElement;
+
+    const repeat: HTMLInputElement | null = document.getElementById("repeat") as HTMLInputElement;
+    const repeat_button: HTMLInputElement | null = document.getElementById("repeat_button") as HTMLInputElement;
+
+    const search: HTMLInputElement | null = document.getElementById("search") as HTMLInputElement;
+    const search_month: HTMLInputElement | null = document.getElementById("search_month") as HTMLInputElement;
+    const search_date: HTMLInputElement | null = document.getElementById("search_date") as HTMLInputElement;
+
+    const search2: HTMLInputElement | null = document.getElementById("search2") as HTMLInputElement;
+    const search_month2: HTMLInputElement | null = document.getElementById("search_month2") as HTMLInputElement;
+
+    const search3: HTMLInputElement | null = document.getElementById("search3") as HTMLInputElement;
+    const search_activity: HTMLInputElement | null = document.getElementById("search_activity") as HTMLInputElement;
+
     kalender.style.display = "none";
     login.style.display = "block";
     logout.style.display = "none";
+    action2.value = "add";
+
+    add.style.display = "block"
+    Date_a.value = "1";
+    Month_a.value = "January";
+    Start_a.value = "";
+    End_a.value = "";
+    Activity_a.value = "";
+
+    remove.style.display = "none";
+    Month_r.value = "January";
+    Date_r.value = "1";
+    Activity_r.value = "";
+
+    repeat.style.display = "none";
+    repeat_button.style.display = "block";
+
+    search.style.display = "none";
+    search_month.value = "January";
+    search_date.value = "1";
+
+    search2.style.display = "none";
+    search_month2.value = "January";
+
+    search3.style.display = "none";
+    search_activity.value = "";
+
     showMessage(Global_username + " has been logged out");
     Global_username = null;
 }
@@ -421,7 +464,7 @@ document.addEventListener("DOMContentLoaded", function (): void {
 function makeData(month: string, date: string, start: string, end: string, activity: string): void { 
     const data_con: string = localStorage.getItem(Global_username + '_data') as string;
     const data: ActivityTable = data_con ? JSON.parse(data_con) : ph_empty(Act_table_size, probe_linear(hashfunc));
-    data.probe = probe_linear(hashfunc);
+    data.probe = prob_hash;
 
     const aktivitet: Activity = {
         Month: month,
@@ -431,7 +474,8 @@ function makeData(month: string, date: string, start: string, end: string, activ
         Activity: activity
     }
 
-    const id: number = Hash_Function(month, date, activity);
+    //const id: number = Hash_Function(month, date, activity);
+    const id: string = month + date + activity
     if (ph_lookup(data, id)) {
         showMessage("This activity has already been added.");
     } else {
@@ -491,10 +535,11 @@ function add(): void {
  * @returns Nothing.
  */
 function removeData(month:string, date: string, activity: string): void {
-    const id: number = Hash_Function(month, date, activity);
+    const id: string = month + date + activity
+    //const id: number = Hash_Function(month, date, activity);
     const data_con: string = localStorage.getItem(Global_username + '_data') as string;
     const data: ActivityTable = data_con ? JSON.parse(data_con) : ph_empty(Act_table_size, probe_linear(hashfunc));
-    data.probe = probe_linear(hashfunc);
+    data.probe = prob_hash;
     if (ph_lookup(data, id)) {
         showMessage("The activity has been deleted.")
         ph_delete(data, id);
@@ -543,8 +588,13 @@ function remove(): void {
  * @returns Nothing.
  */
 function clearCalendar(): void {
-    localStorage.removeItem(Global_username + '_data');
+    if (localStorage.getItem(Global_username + '_data')) {
+        localStorage.removeItem(Global_username + '_data');
     showMessage("Calendar cleared for " + Global_username + "." );
+    } else {
+        showMessage(Global_username + " has no calender.")
+    }
+    
 }
 
 /**
@@ -615,7 +665,7 @@ function search_date(): void {
 function search_date_helper(month: string, date: string): Activity[] {
     const data_con: string = localStorage.getItem(Global_username + '_data') as string;
     let data: ActivityTable = data_con ? JSON.parse(data_con) : ph_empty(Act_table_size, probe_linear(hashfunc));
-    data.probe = probe_linear(hashfunc);
+    data.probe = prob_hash;
     const activities: Activity[] = [];
 
     for (let i = 0; i < data.keys.length; i++) {
@@ -695,7 +745,7 @@ function search_month(): void {
 function search_month_helper(month: string): Activity[] {
     const data_con: string = localStorage.getItem(Global_username + '_data') as string;
     let data: ActivityTable = data_con ? JSON.parse(data_con) : ph_empty(Act_table_size, probe_linear(hashfunc));
-    data.probe = probe_linear(hashfunc);
+    data.probe = prob_hash;
     const activities: Activity[] = [];
 
     for (let i = 0; i < data.keys.length; i++) {
@@ -777,7 +827,7 @@ function search_activity(): void {
 function search_activity_helper(activity: string): Activity[] {
     const data_con: string = localStorage.getItem(Global_username + '_data') as string;
     let data: ActivityTable = data_con ? JSON.parse(data_con) : ph_empty(Act_table_size, probe_linear(hashfunc));
-    data.probe = probe_linear(hashfunc);
+    data.probe = prob_hash;
     const activities: Activity[] = [];
 
     for (let i = 0; i < data.keys.length; i++) {
@@ -905,7 +955,7 @@ function repeatActivity(month: string, date: string, start: string, end: string,
     const startDate: Date = new Date(month + " " + date);
     const data_con: string = localStorage.getItem(Global_username + '_data') as string;
     const data: ActivityTable = data_con ? JSON.parse(data_con) : ph_empty(Act_table_size, probe_linear(hashfunc));
-    data.probe = probe_linear(hashfunc);
+    data.probe = prob_hash;
 
     if (repeatElement && repeat_numElement && add_buttonElement && repeat_buttonElement) {
 
@@ -922,8 +972,8 @@ function repeatActivity(month: string, date: string, start: string, end: string,
                 Activity: activity
             };
 
-            const id: number = Hash_Function(newMonth, newDay, activity);
-
+            //const id: number = Hash_Function(newMonth, newDay, activity);
+            const id: string = newMonth + newDay + activity;
             if (!ph_lookup(data, id)) {
                 ph_insert(data, id, newActivity);
             } else {}
