@@ -204,52 +204,5 @@
     <p id="message"></p>
 
     <script src="LifeHub.js"></script>
-    <script>
-        // JavaScript code to populate days dynamically based on selected month
-        document.addEventListener("DOMContentLoaded", function() {
-            var monthSelect = document.getElementById("Month_a");
-            var dateSelect = document.getElementById("Date_a");
-            var monthOptions = document.getElementById("Month_r");
-            var dateOptions = document.getElementById("Date_r");
-            var searchMonthOptions = document.getElementById("search_month");
-            var searchDateOptions = document.getElementById("search_date");
-
-            monthSelect.addEventListener("change", function() {
-                populateDays(monthSelect.value, dateSelect);
-            });
-
-            monthOptions.addEventListener("change", function() {
-                populateDays(monthOptions.value, dateOptions);
-            });
-
-            searchMonthOptions.addEventListener("change", function() {
-                populateDays(searchMonthOptions.value, searchDateOptions);
-            });
-
-            // Populate days function
-            function populateDays(month, dropdown) {
-                dropdown.innerHTML = "";
-                var daysInMonth = new Date(new Date().getFullYear(), getMonthIndex(month), 0).getDate();
-                for (var i = 1; i <= daysInMonth; i++) {
-                    var option = document.createElement("option");
-                    option.text = i;
-                    option.value = i;
-                    dropdown.add(option);
-                }
-            }
-
-            // Helper function to get month index
-            function getMonthIndex(month) {
-                var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                return months.indexOf(month) + 1;
-            }
-
-            // Initialize days for initial month selection
-            populateDays(monthSelect.value, dateSelect);
-            populateDays(monthOptions.value, dateOptions);
-            populateDays(searchMonthOptions.value, searchDateOptions);
-        });
-
-    </script>
 </body>
 </html>

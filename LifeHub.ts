@@ -1,4 +1,4 @@
- 
+ // functions from the course library  (from here)
 /**
  * Create an empty probing hash table
  * @template K the type of keys
@@ -102,6 +102,7 @@ function ph_delete<K, V>(tab: ProbingHashtable<K,V>, key: K): boolean {
 function probe_linear<K>(hash: HashFunction<K>): ProbingFunction<K> {
     return (length: number, key: K, i: number) => (hash(key) + i) % length;
 }
+ // functions from the course library  (to here)
 
 //import * as HT from '../lib/hashtables';
 
@@ -172,12 +173,13 @@ function Hash_Function(month: string, date: string, activity: string): number {
 
 /**
  * Displays a message in the browser.
+ * Updates the content of 
+ * the message element with the provided message.
  * @example
  * // Displays the message "Hello, world!" in the browser
  * showMessage("Hello, world!");
  * @param message A string containing the message to display.
- * @returns Nothing. Updates the content of 
- * the message element with the provided message.
+ * @returns Nothing.
  */
 function showMessage(message: string): void {
     const messageElement: HTMLElement | null = document.getElementById("message");
@@ -190,13 +192,14 @@ function showMessage(message: string): void {
  * Creates a new user with the provided username and password.
  * If the username is available, the user is created successfully.
  * If the username is already taken, an error message is displayed.
+ * Updates the message element with the appropriate message
+ * and saves the username and password if the username is not already taken
  * @example
  * // Assuming input fields with ids "createUsername" and "createPassword"
  * // and a message element with id "message"
  * createUser();
  * @precondition The input fields with ids "createUsername" and "createPassword" must exist in the DOM.
- * @returns Nothing. Updates the message element with the appropriate message
- * and saves the username and password if the username is not already taken
+ * @returns Nothing.
  */
 function createUser(): void {
     const username: HTMLInputElement | null = document.getElementById("createUsername") as HTMLInputElement;
@@ -256,12 +259,13 @@ function existing_username(username: string): boolean {
 
 /**
  * The function responsible for the login process.
+ * Makes the login menu visible and 
+ * sets Global_username to username.
  * @example
  * // When the login button is pressed in the 
  * // selection tab the login menu appears
  * login()
- * @returns Nothing. Makes the login menu visible and 
- * sets Global_username to username.
+ * @returns Nothing.
  */
 function login(): void {
     const usernameElement: HTMLInputElement | null = document.getElementById("loginUsername") as HTMLInputElement;
@@ -292,12 +296,13 @@ function login(): void {
 
 /**
  * The function responsible for the logout process.
+ * Makes the login menu visible
+ * and sets Global_username to null.
  * @example
  * // When the logout button is pressed you 
  * are returned to the login/create user menu
  * logout()
- * @returns Nothing. Takes the login menu visible
- * and sets Global_username to null.
+ * @returns Nothing.
  */
 function logout(): void {
     const kalender: HTMLInputElement | null = document.getElementById("kalender") as HTMLInputElement;
@@ -335,13 +340,14 @@ function authenticate(username: string, password: string): boolean {
 /**
  * Function responsible for the selection menu for
  * login/Create user.
+ * Makes the "login form" visible and 
+ * "Create user form" unvisible or vice versa.
  * @example
  * // if the "Create user" button is pressed in the 
  * selection tab, the create user menu appears with no
  * text in the input boxes
  * login_create_selection()
- * @returns Nothing. Makes the "login form" visible and 
- * "Create user form" unvisible or vice versa
+ * @returns Nothing.
  */
 function login_create_selection(): void {
     const actionElement: HTMLSelectElement | null = document.getElementById("action") as HTMLSelectElement;
@@ -379,12 +385,13 @@ function login_create_selection(): void {
  * Function responsible for checking if the user 
  * changes between the login or create user form 
  * in the selection tab.
+ * Listens if the user changes 
+ * between "Login" and "Create user" is the selection tab
+ * and calls the login_create_selection function when that happens.
  * @example
  * // if tone of the buttons is pressed in the 
  * selection tab, the function recognizes that 
- * @returns Nothing. Listens if the user changes 
- * between "Login" and "Create user" is the selection tab
- * and calls the login_create_selection function when that happens
+ * @returns Nothing.
  */
 document.addEventListener("DOMContentLoaded", function (): void {
     const actionElement: HTMLSelectElement | null = document.getElementById("action") as HTMLSelectElement;
@@ -395,6 +402,9 @@ document.addEventListener("DOMContentLoaded", function (): void {
 
 /**
  * Creates an activity and stores it in a hashtable.
+ * Either opens an already exsiting hashtable
+ * for the current user or creates an empty one and stores the 
+ * activity in it.
  * @example
  * // will save down the activity in Bobs calender
  * createUser("Bob", "123");
@@ -406,9 +416,7 @@ document.addEventListener("DOMContentLoaded", function (): void {
  * @param end The end time of the activity.
  * @param activity The activity description.
  * @precondition all parameters has to be strings
- * @returns Nothing. Either opens an already exsiting hashtable
- * for the current user or creates an empty one and stores the 
- * activity in it
+ * @returns Nothing.
  */
 function makeData(month: string, date: string, start: string, end: string, activity: string): void { 
     const data_con: string = localStorage.getItem(Global_username + '_data') as string;
@@ -436,14 +444,15 @@ function makeData(month: string, date: string, start: string, end: string, activ
 /**
  * The function that is called when the "Add activity"
  * button is pressed.
+ * Either shows a message when the user has
+ * not filled in all boxes or calls the makeData function and clears
+ * all input elements
  * @example
  * // takes out what was put in the different html elements, checks the 
  * properties of the elements and dependning on what the properties are
  * it will behave differently
  * add()
- * @returns Nothing. Either shows a message when the user has
- * not filled in all boxes or calls the makeData function and clears
- * all input elements
+ * @returns Nothing. 
  */
 function add(): void {
     const month: HTMLInputElement | null = document.getElementById("Month_a") as HTMLInputElement;
@@ -466,6 +475,9 @@ function add(): void {
 
 /**
  * Removes an activity.
+ * Either opens an already exsiting hashtable
+ * for the current user or creates an empty one and deletes the 
+ * activity. If the activity does not exist a message appears.
  * @example
  * // will remove the activity from Bobs calender
  * createUser("Bob", "123");
@@ -476,9 +488,7 @@ function add(): void {
  * @param date The date of the activity.
  * @param activity The activity description.
  * @precondition all parameters has to be strings
- * @returns Nothing. Either opens an already exsiting hashtable
- * for the current user or creates an empty one and deletes the 
- * activity. If the activity does not exist a message appears.
+ * @returns Nothing.
  */
 function removeData(month:string, date: string, activity: string): void {
     const id: number = Hash_Function(month, date, activity);
@@ -497,14 +507,15 @@ function removeData(month:string, date: string, activity: string): void {
 /**
  * The function that is called when the "Remove activity"
  * button is pressed.
+ * Either shows a message when the user has
+ * not filled in all boxes or calls the removeData function and clears
+ * all input elements
  * @example
  * // takes out what was put in the different html elements, checks the 
  * properties of the elements and dependning on what the properties are
  * it will behave differently
  * remove()
- * @returns Nothing. Either shows a message when the user has
- * not filled in all boxes or calls the removeData function and clears
- * all input elements
+ * @returns Nothing.
  */
 function remove(): void {
     const month: HTMLInputElement | null = document.getElementById("Month_r") as HTMLInputElement;
@@ -524,11 +535,12 @@ function remove(): void {
 /**
  * The function that is called when the "Clear calender"
  * button is pressed.
+ * Deletes the current users calender and 
+ * displays a mesage that it has been done.
  * @example
  * // Deletes the currents user calender
  * clearCalender()
- * @returns Nothing. Deletes the current users calender and 
- * displays a mesage that it has been done.
+ * @returns Nothing.
  */
 function clearCalendar(): void {
     localStorage.removeItem(Global_username + '_data');
@@ -538,12 +550,23 @@ function clearCalendar(): void {
 /**
  * The function that is called when the "Search date"
  * button is pressed.
+ * Displays all activites on a date.
  * @example
- * // Takes out the html elements, calls search_date_helper with
- * the month and date as inputs and displays all activities 
- * on that date
+ * // will display: 
+ * // "Activities found for January 12:
+ * // Start: 12:00, End: 13:00, Activity: Walk
+ * // Start: 08:00, End: 10:00, Activity: Gym
+ * // Start: 15:00, End: 16:00, Activity: Fika"
+ * createUser("Bob", "123");
+ * login();
+ * add();
+ * makeData("January", "12", "08:00", "10:00", "Gym");
+ * makeData("January", "12", "12:00", "13:00", "Walk");
+ * makeData("January", "12", "15:00", "16:00", "Fika");
  * search_date()
- * @returns Nothing. Displays all activites on a date.
+ * search_date_helper("January", "12");
+ * search_date()
+ * @returns Nothing.
  */
 function search_date(): void {
     const searchMonthInput: HTMLInputElement | null = document.getElementById("search_month") as HTMLInputElement;
@@ -570,11 +593,12 @@ function search_date(): void {
 /**
  * Helper function for search_date.
  * @example
- * // will display: 
- * // "Activities found for January 12:
- * // Start: 12:00, End: 13:00, Activity: Walk
- * // Start: 08:00, End: 10:00, Activity: Gym
- * // Start: 15:00, End: 16:00, Activity: Fika"
+ * // will return an array contaning the activities 
+ * // on the same date
+ * // made by:
+ * // makeData("January", "12", "08:00", "10:00", "Gym");
+ * // makeData("January", "12", "12:00", "13:00", "Walk");
+ * // makeData("January", "12", "15:00", "16:00", "Fika");
  * createUser("Bob", "123");
  * login();
  * add();
@@ -612,12 +636,21 @@ function search_date_helper(month: string, date: string): Activity[] {
 /**
  * The function that is called when the "Search month"
  * button is pressed.
+ * Displays all activites in a specific month.
  * @example
- * // Takes out the html elements, calls search_month_helper with
- * the month and as input and displays all activities 
- * on that month
+ * // will display: 
+ * // "Activities found for January:
+ * // Date: 14, Start: 12:00, End: 13:00, Activity: Walk
+ * // Date: 1, Start: 08:00, End: 10:00, Activity: Gym
+ * // Date: 19, Start: 15:00, End: 16:00, Activity: Fika"
+ * createUser("Bob", "123");
+ * login();
+ * add();
+ * makeData("January", "1", "08:00", "10:00", "Gym");
+ * makeData("January", "14", "12:00", "13:00", "Walk");
+ * makeData("January", "19", "15:00", "16:00", "Fika");
  * search_month()
- * @returns Nothing. Displays all activites in a specific month.
+ * @returns Nothing.
  */
 function search_month(): void {
     const searchMonthInput: HTMLInputElement | null = document.getElementById("search_month2") as HTMLInputElement;
@@ -642,19 +675,19 @@ function search_month(): void {
 /**
  * Helper function for search_month.
  * @example
- * // will display: 
- * // "Activities found for January 12:
- * // Start: 12:00, End: 13:00, Activity: Walk
- * // Start: 08:00, End: 10:00, Activity: Gym
- * // Start: 15:00, End: 16:00, Activity: Fika"
+ * // will return an array contaning the activities 
+ * // in the same month
+ * // Date: 14, Start: 12:00, End: 13:00, Activity: Walk
+ * // Date: 1, Start: 08:00, End: 10:00, Activity: Gym
+ * // Date: 19, Start: 15:00, End: 16:00, Activity: Fika"
  * createUser("Bob", "123");
  * login();
  * add();
- * makeData("January", "12", "08:00", "10:00", "Gym");
- * makeData("January", "12", "12:00", "13:00", "Walk");
- * makeData("January", "12", "15:00", "16:00", "Fika");
- * search_date()
- * search_date_helper("January", "12");
+ * makeData("January", "1", "08:00", "10:00", "Gym");
+ * makeData("January", "14", "12:00", "13:00", "Walk");
+ * makeData("January", "19", "15:00", "16:00", "Fika");
+ * search_month();
+ * search_month_helper("January");
  * @param month The month of the activity
  * @precondition month has to be a string
  * @returns An array containing all activiteis on a specific month
@@ -683,12 +716,21 @@ function search_month_helper(month: string): Activity[] {
 /**
  * The function that is called when the "Search activity"
  * button is pressed.
+ * Displays all activites that has the same activity description.
  * @example
- * // Takes out the html elements, calls search_activity_helper with
- * the activity as inputs and displays all activities 
- * with that that has the same activity
+ * // will display: 
+ * // "Activities found for Walk :
+ * Start: 11:11, End: 11:01, Month: January, Date: 19
+ * Start: 11:01, End: 11:11, Month: January, Date: 14
+ * Start: 11:11, End: 11:11, Month: January, Date: 1"
+ * createUser("Bob", "123");
+ * login();
+ * add();
+ * makeData("January", "1", "08:00", "10:00", "Walk");
+ * makeData("January", "14", "12:00", "13:00", "Walk");
+ * makeData("January", "19", "15:00", "16:00", "Walk");
  * search_activity()
- * @returns Nothing. Displays all activites that has the same activity description.
+ * @returns Nothing.
  */
 function search_activity(): void {
     const searchActivityInput: HTMLInputElement | null = document.getElementById("search_activity") as HTMLInputElement;
@@ -716,18 +758,18 @@ function search_activity(): void {
  * Helper function for search_month.
  * @example
  * // will display: 
- * // "Activities found for January 12:
- * // Start: 12:00, End: 13:00, Activity: Walk
- * // Start: 08:00, End: 10:00, Activity: Gym
- * // Start: 15:00, End: 16:00, Activity: Fika"
+ * "Activities found for Walk :
+ * Start: 11:00, End: 12:00, Month: January, Date: 19
+ * Start: 11:00, End: 12:00, Month: January, Date: 14
+ * Start: 11:00, End: 12:00, Month: January, Date: 1";
  * createUser("Bob", "123");
  * login();
  * add();
- * makeData("January", "12", "08:00", "10:00", "Gym");
- * makeData("January", "12", "12:00", "13:00", "Walk");
- * makeData("January", "12", "15:00", "16:00", "Fika");
- * search_date()
- * search_date_helper("January", "12");
+ * makeData("January", "1", "11:00", "12:00", "Walk");
+ * makeData("January", "14", "12:00", "12:00", "Walk");
+ * makeData("January", "19", "11:00", "12:00", "Walk");
+ * search_month();
+ * search_month_helper("January");
  * @param activity The activity description of the activity
  * @precondition activity has to be a string
  * @returns An array containing all activiteis that has the same activity description
@@ -756,12 +798,13 @@ function search_activity_helper(activity: string): Activity[] {
 /**
  * Function responsible for the selection menu for
  * all the different functions in the calender.
+ * Makes the desired action menu visible 
+ * and the other ones unvisible
  * @example
  * // if the "Search date" button is pressed in the 
  * selection tab, the search date menu appears
  * login_create_selection()
- * @returns Nothing. Makes the desired action menu visible 
- * and the other ones unvisible
+ * @returns Nothing.
  */
 function calender_selection(): void {
     const actionElement: HTMLSelectElement | null = document.getElementById("action2") as HTMLSelectElement;
@@ -817,12 +860,13 @@ function calender_selection(): void {
  * Function responsible for checking if the user 
  * changes between the calender actions 
  * in the selection tab.
+ * Listens if the user changes 
+ * between the different actions in the selection tab
+ * and calls the calender_selection function when that happens
  * @example
  * // if one of the buttons is pressed in the 
  * selection tab, the function recognizes that 
- * @returns Nothing. Listens if the user changes 
- * between the different actions in the selection tab
- * and calls the calender_selection function when that happens
+ * @returns Nothing.
  */
 document.addEventListener("DOMContentLoaded", function (): void {
     const actionElement: HTMLSelectElement | null = document.getElementById("action2") as HTMLSelectElement;
@@ -833,8 +877,16 @@ document.addEventListener("DOMContentLoaded", function (): void {
 
 /**
 * Repeat an activity for multiple weeks.
+* Will repeat an activity for as many 
+* weeks as the parameter weeks and save each activity in
+* the users calender.
 * @example
-* ?????
+* // will add the activity for 4 weeks forward in the calender
+* createUser("Bob", "123");
+* login();
+* add();
+* repeatActivity_helper();
+* repeatActivity("January", "1", "11:00", "12:00", "Walk", 4);
 * @param month The month of the activity.
 * @param date The date of the activity.
 * @param start The start time of the activity.
@@ -842,9 +894,7 @@ document.addEventListener("DOMContentLoaded", function (): void {
 * @param activity The activity description.
 * @param weeks Number of weeks to repeat the activity.
 * @precondition All parameters are strings
-* @returns Nothing. Will repeat an activity for as many 
-* weeks as the parameter weeks and save each activity in
-* the users calender.
+* @returns Nothing.
 */
 function repeatActivity(month: string, date: string, start: string, end: string, activity: string, weeks: number): void {
     const repeatElement: HTMLElement | null = document.getElementById("repeat");
@@ -884,19 +934,21 @@ function repeatActivity(month: string, date: string, start: string, end: string,
     repeatElement.style.display = "none"
     add_buttonElement.style.display = "block"
     repeat_buttonElement.style.display = "block"
+    showMessage("Added the activity for " + JSON.stringify(weeks) + " weeks forward")
     } else {}
 }
 
 /**
  * The function that is called when the "Confirm"
  * button is pressed.
+ * Calls the repeatActivity function
+ * and clears all input fields
  * @example
  * // takes out what was put in the different html elements, checks the 
  * properties of the elements and calls the repeatActivity function
  * with those elements as arguments 
  * repeat_helper()
- * @returns Nothing. Calls the repeatActivity function
- * and clears all input fields 
+ * @returns Nothing.
  */
 function repeat_helper(): void {
     const month: HTMLInputElement | null = document.getElementById("Month_a") as HTMLInputElement;
@@ -919,13 +971,14 @@ function repeat_helper(): void {
 /**
  * The function that is called when the "Repeat activity"
  * button is pressed.
+ * Changes the display styles of the
+ * "repeat", "add_button" and "repeat_button" html elements.
  * @example
  * // Makes the "Confirm" button and "How many weeks to repeat?" box 
  * appear while making the "Repeat activity" and "Add activity"
  * buttons unvisible
  * repeat_button()
- * @returns Nothing. Changes the display styles of the
- * "repeat", "add_button" and "repeat_button" html elements
+ * @returns Nothing.
  */
 function repeat_button(): void {
     const repeatElement: HTMLElement | null = document.getElementById("repeat");
@@ -937,3 +990,60 @@ function repeat_button(): void {
         repeat_buttonElement.style.display = "none"
     } else {}
 }
+
+/**
+ * Listens if the user changes 
+ * between the different dates in the selection tab
+ * for months and dates
+ * Calculates how many dates the choosen month has
+ * and displays it
+ * @example
+ * // if the user changes from January to August the 
+ * dates in the selection tab for dates will change from 31 to 30
+ * @returns Nothing.
+ */
+document.addEventListener("DOMContentLoaded", () => {
+    const monthSelect: HTMLSelectElement | null = document.getElementById("Month_a") as HTMLSelectElement;
+    const dateSelect: HTMLSelectElement | null = document.getElementById("Date_a") as HTMLSelectElement;
+    const monthOptions: HTMLSelectElement | null = document.getElementById("Month_r") as HTMLSelectElement;
+    const dateOptions: HTMLSelectElement | null = document.getElementById("Date_r") as HTMLSelectElement;
+    const searchMonthOptions: HTMLSelectElement | null = document.getElementById("search_month") as HTMLSelectElement;
+    const searchDateOptions: HTMLSelectElement | null = document.getElementById("search_date") as HTMLSelectElement;
+
+    if (monthSelect && dateSelect && monthOptions && dateOptions && searchMonthOptions && searchDateOptions) {
+        monthSelect.addEventListener("change", () => {
+            populateDays(monthSelect.value, dateSelect);
+        });
+
+        monthOptions.addEventListener("change", () => {
+            populateDays(monthOptions.value, dateOptions);
+        });
+
+        searchMonthOptions.addEventListener("change", () => {
+            populateDays(searchMonthOptions.value, searchDateOptions);
+        });
+
+        // Populate days function
+        function populateDays(month: string, dropdown: HTMLSelectElement): void {
+            dropdown.innerHTML = "";
+            const daysInMonth: number = new Date(new Date().getFullYear(), getMonthIndex(month), 0).getDate();
+            for (let i = 1; i <= daysInMonth; i++) {
+                const option: HTMLOptionElement = document.createElement("option");
+                option.text = i.toString();
+                option.value = i.toString();
+                dropdown.add(option);
+            }
+        }
+
+        // Helper function to get month index
+        function getMonthIndex(month: string): number {
+            const months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            return months.indexOf(month) + 1;
+        }
+
+        // Initialize days for initial month selection
+        populateDays(monthSelect.value, dateSelect);
+        populateDays(monthOptions.value, dateOptions);
+        populateDays(searchMonthOptions.value, searchDateOptions);
+    }
+});
