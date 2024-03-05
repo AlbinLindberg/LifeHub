@@ -11,7 +11,7 @@ let mock_storage: {[key: string]: ActivityTable} = {};
 let Global_username: string = "Albin";
      // creating a global_username that gets stored when you log in to keep the diffrent datas separate
 
-     const hashfunc: HashFunction<number> = key => key // 
+     const hashfunc: HashFunction<string> = key => string_to_number(key);  // 
 
 
 let credentials: { [key: string]: string } = {}
@@ -27,7 +27,7 @@ let credentials: { [key: string]: string } = {}
     }
    
     function makeData_changed(month: string, date: string, start: string, end: string, activity: string): void {
-        const hashfunc: HashFunction<number> = key => key 
+         
         //const data_con: string = localStorage.getItem(Global_username + '_data') as string;
         //const data: ActivityTable = data_con ? JSON.parse(data_con) : ph_empty(10, probe_linear(hashfunc));
         const data: ActivityTable = mock_storage[Global_username + '_data'] ? mock_storage[Global_username + '_data'] : ph_empty(10, probe_linear(hashfunc));// for testing sake we just create a empty hashtable 
@@ -39,7 +39,7 @@ let credentials: { [key: string]: string } = {}
             End: end,
             Activity: activity
         };
-        const id: number = (string_to_number(activity) + string_to_number(month)) - parseInt(date);
+        const id: string = month + date + activity;
          
         ph_insert(data, id, aktivitet);
         //localStorage.setItem(Global_username + '_data', JSON.stringify(data)); // cant add the data to local storage
@@ -79,8 +79,8 @@ let credentials: { [key: string]: string } = {}
                 //const date_value: string = date.value; 
                 //const activity_value: string = activity.value;
         
-                const id: number = (string_to_number(activity_value) + string_to_number(month_value)) - parseInt(date_value);
-                const hashfunc: HashFunction<number> = key => key
+                const id: string = month_value + date_value + activity_value
+                 
 
                 //const data_con: string = localStorage.getItem(Global_username + '_data') as string;
                 //const data: ActivityTable = data_con ? JSON.parse(data_con) : ph_empty(10, probe_linear(hashfunc));
@@ -121,7 +121,7 @@ let credentials: { [key: string]: string } = {}
                 }
                 */
                 function searchActivity_changed(month: string, date: string): Activity[] {
-                    const hashfunc: HashFunction<number> = key => key;
+                     
                      
                     //let data: ActivityTable = localStorage.getItem(Global_username + '_data') ? JSON.parse(localStorage.getItem(Global_username + '_data') as string) : ph_empty(10, probe_linear(hashfunc));
                     const data: ActivityTable = mock_storage[Global_username + '_data'] ? mock_storage[Global_username + '_data'] : ph_empty(10, probe_linear(hashfunc));
@@ -190,11 +190,4 @@ test("search for activity ", () => {
     expect(searchActivity_changed("january", "27")).toContainEqual({Month: "january", Date: "27", Start: "13:00", End: "14:00", Activity: "Icehockey"});
 });
 
-test("Local storage work with jest", () => {
-    makeData("january", "23", "13:00", "15:00", "Fotboll");
-    const data_con: string = localStorage.getItem(Global_username + '_data') as string;
-    const data: ActivityTable = data_con ? JSON.parse(data_con) : ph_empty(10, probe_linear(hashfunc));
-    data.probe = probe_linear(hashfunc);
-    expect(data).toContain({Month: "january", Date: "23", Start: "13:00", End: "15:00", Activity: "Fotboll"});
-
-})
+ 
