@@ -1,3 +1,5 @@
+
+/* 
  // functions from the course library  (from here)
 /**
  * Create an empty probing hash table
@@ -103,6 +105,8 @@ function probe_linear<K>(hash: HashFunction<K>): ProbingFunction<K> {
     return (length: number, key: K, i: number) => (hash(key) + i) % length;
 }
  // functions from the course library  (to here)
+
+
 
 //import * as HT from '../lib/hashtables';
 
@@ -793,7 +797,7 @@ function search_activity(): void {
 
     if (searchActivityInput) {
         const searchActivity: string = searchActivityInput.value;
-        const activities: Activity[] = search_activity_helper(searchActivity);
+        const activities: Activity[] = search_activity_helper(searchActivity).sort((a,b) => parseInt(a.Date) - parseInt(b.Date));
 
         if (activities.length > 0) {
             let message = "Activities found for " + searchActivity + " " + ":\n";
@@ -1000,7 +1004,9 @@ function repeat_helper(): void {
     const activity: HTMLInputElement | null = document.getElementById("Activity_a") as HTMLInputElement;
     const repeat_numElement: HTMLInputElement | null = document.getElementById("repeat_num") as HTMLInputElement
 
-    if (month && date && start && end && activity && repeat_numElement) {
+    if (month.value === "" || date.value === "" || start.value === "" || end.value === "" || activity.value === "" || repeat_numElement.value === "") {
+        showMessage("Make sure all boxes are filled in");
+    } else if (month && date && start && end && activity && repeat_numElement) {
         repeatActivity(month.value, date.value, start.value, end.value, activity.value, parseInt(repeat_numElement.value));
         setValueById("Date_a", "");
         setValueById("Month_a", "");
