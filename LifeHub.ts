@@ -176,6 +176,56 @@ function showMessage(message: string): void {
     } else {}
 }
 
+
+/**
+ * Hides the HTML element with the specified ID.
+ * Sets the display style property of the element to "none".
+ * @example
+ * // Hides the element with ID "kalender"
+ * hideElementById("kalender");
+ * @param id The ID of the HTML element to hide.
+ * @returns Nothing.
+ */
+function hideElementById(id: string): void {
+    const element = document.getElementById(id);
+    if (element) {
+        element.style.display = "none";
+    }
+}
+
+/**
+ * Displays the HTML element with the specified ID.
+ * Sets the display style property of the element to "block".
+ * @example
+ * // Displays the element with ID "login"
+ * showElementById("login");
+ * @param id The ID of the HTML element to display.
+ * @returns Nothing.
+ */
+function showElementById(id: string): void {
+    const element = document.getElementById(id);
+    if (element) {
+        element.style.display = "block";
+    }
+}
+
+/**
+ * Sets the value of the HTML input element with the specified ID.
+ * Updates the value property of the input element with the provided value.
+ * @example
+ * // Sets the value of the input element with ID "Date_a" to "1"
+ * setValueById("Date_a", "1");
+ * @param id The ID of the HTML input element.
+ * @param value The value to set for the input element.
+ * @returns Nothing.
+ */
+function setValueById(id: string, value: string): void {
+    const element = document.getElementById(id) as HTMLInputElement;
+    if (element) {
+        element.value = value;
+    }
+}
+
 /**
  * Creates a new user with the provided username and password.
  * If the username is available, the user is created successfully.
@@ -194,17 +244,19 @@ function createUser(): void {
     const password: HTMLInputElement | null = document.getElementById("createPassword") as HTMLInputElement;
     const message: HTMLElement | null = document.getElementById("message")
 
-
     if (username && password && message) {
-        if (existing_username(username.value) === false) {
+        if (username.value === "" || password.value === "") {
+            showMessage("Both input boxes has to be filled in");
+        }
+        else if (existing_username(username.value) === false) {
             saveCredentials(username.value, password.value);
-            message.innerText = "User " + username.value + " created successfully.";
-            username.value = "";
-            password.value = "";
+            showMessage("User "+ username.value + " created successfully.");
+            setValueById("createUsername", "");
+            setValueById("createPassword", "");
         } else {
             showMessage("Username has been taken, please chose a different username.");
-            username.value = "";
-            password.value = "";
+            setValueById("createUsername", "");
+            setValueById("createPassword", "");;
         }
     } else { }
 }
@@ -267,15 +319,11 @@ function login(): void {
         if (authenticate(username, password)) {
             Global_username = username;
             showMessage("Welcome, " + username + "!");
-            const kalender: HTMLInputElement | null = document.getElementById("kalender") as HTMLInputElement;
-            const login: HTMLInputElement | null = document.getElementById("login") as HTMLInputElement;
-            const logout: HTMLInputElement | null = document.getElementById("logout") as HTMLInputElement;
-            kalender.style.display = "block";
-            login.style.display = "none";
-            logout.style.display = "block";
-            usernameElement.value = "";
-            passwordElement.value = "";
-
+            showElementById("kalender");
+            showElementById("logout");
+            hideElementById("login");
+            setValueById("loginUsername", "");
+            setValueById("loginPassword", "");
         } else {
             showMessage("Authentication failed. Please try again.");
         }
@@ -294,65 +342,36 @@ function login(): void {
  * @returns Nothing.
  */
 function logout(): void {
-    const kalender: HTMLInputElement | null = document.getElementById("kalender") as HTMLInputElement;
-    const login: HTMLInputElement | null = document.getElementById("login") as HTMLInputElement;
-    const logout: HTMLInputElement | null = document.getElementById("logout") as HTMLInputElement;
-    const action2: HTMLInputElement | null = document.getElementById("action2") as HTMLInputElement
+    hideElementById("kalender");
+    showElementById("login");
+    hideElementById("logout");
 
-    const add: HTMLInputElement | null = document.getElementById("add") as HTMLInputElement
-    const Month_a: HTMLInputElement | null = document.getElementById("Month_a") as HTMLInputElement;
-    const Date_a: HTMLInputElement | null = document.getElementById("Date_a") as HTMLInputElement;
-    const Start_a: HTMLInputElement | null = document.getElementById("Start_a") as HTMLInputElement;
-    const End_a: HTMLInputElement | null = document.getElementById("End_a") as HTMLInputElement;
-    const Activity_a: HTMLInputElement | null = document.getElementById("Activity_a") as HTMLInputElement;
+    setValueById("action2", "add");
 
-    const remove: HTMLInputElement | null = document.getElementById("remove") as HTMLInputElement
-    const Month_r: HTMLInputElement | null = document.getElementById("Month_r") as HTMLInputElement;
-    const Date_r: HTMLInputElement | null = document.getElementById("Date_r") as HTMLInputElement;
-    const Activity_r: HTMLInputElement | null = document.getElementById("Activity_r") as HTMLInputElement;
+    showElementById("add");
+    setValueById("Date_a", "1");
+    setValueById("Month_a", "January");
+    setValueById("Start_a", "");
+    setValueById("End_a", "");
+    setValueById("Activity_a", "");
 
-    const repeat: HTMLInputElement | null = document.getElementById("repeat") as HTMLInputElement;
-    const repeat_button: HTMLInputElement | null = document.getElementById("repeat_button") as HTMLInputElement;
+    hideElementById("remove");
+    setValueById("Month_r", "January");
+    setValueById("Date_r", "1");
+    setValueById("Activity_r", "");
 
-    const search: HTMLInputElement | null = document.getElementById("search") as HTMLInputElement;
-    const search_month: HTMLInputElement | null = document.getElementById("search_month") as HTMLInputElement;
-    const search_date: HTMLInputElement | null = document.getElementById("search_date") as HTMLInputElement;
+    hideElementById("repeat");
+    showElementById("repeat_button");
 
-    const search2: HTMLInputElement | null = document.getElementById("search2") as HTMLInputElement;
-    const search_month2: HTMLInputElement | null = document.getElementById("search_month2") as HTMLInputElement;
+    hideElementById("search");
+    setValueById("search_month", "January")
+    setValueById("search_date", "1")
 
-    const search3: HTMLInputElement | null = document.getElementById("search3") as HTMLInputElement;
-    const search_activity: HTMLInputElement | null = document.getElementById("search_activity") as HTMLInputElement;
+    hideElementById("search2");
+    setValueById("search_month2", "January")
 
-    kalender.style.display = "none";
-    login.style.display = "block";
-    logout.style.display = "none";
-    action2.value = "add";
-
-    add.style.display = "block"
-    Date_a.value = "1";
-    Month_a.value = "January";
-    Start_a.value = "";
-    End_a.value = "";
-    Activity_a.value = "";
-
-    remove.style.display = "none";
-    Month_r.value = "January";
-    Date_r.value = "1";
-    Activity_r.value = "";
-
-    repeat.style.display = "none";
-    repeat_button.style.display = "block";
-
-    search.style.display = "none";
-    search_month.value = "January";
-    search_date.value = "1";
-
-    search2.style.display = "none";
-    search_month2.value = "January";
-
-    search3.style.display = "none";
-    search_activity.value = "";
+    hideElementById("search3");
+    setValueById("search_activity", "")
 
     showMessage(Global_username + " has been logged out");
     Global_username = null;
@@ -394,32 +413,22 @@ function authenticate(username: string, password: string): boolean {
  */
 function login_create_selection(): void {
     const actionElement: HTMLSelectElement | null = document.getElementById("action") as HTMLSelectElement;
-    const loginElement: HTMLElement | null = document.getElementById("loginForm");
-    const createElement: HTMLElement | null = document.getElementById("createForm");
-    const messageElement: HTMLElement | null = document.getElementById("message");
-    const login_usernameElement: HTMLInputElement | null = document.getElementById("loginUsername") as HTMLInputElement;
-    const login_passwordElement: HTMLInputElement | null = document.getElementById("loginPassword") as HTMLInputElement;
-    const create_usernameElement: HTMLInputElement | null = document.getElementById("createUsername") as HTMLInputElement;
-    const create_passwordElement: HTMLInputElement | null = document.getElementById("createPassword") as HTMLInputElement;
 
-    if (actionElement && loginElement && createElement && 
-        messageElement && login_usernameElement && login_passwordElement
-        && create_passwordElement && create_usernameElement) {
-
+    if (actionElement) {
         const selectedAction: string = actionElement.value;
 
-        messageElement.innerText = "";
+        showMessage("");
 
         if (selectedAction === "loginForm") {
-            loginElement.style.display = "block";
-            createElement.style.display = "none";
-            login_usernameElement.value = "";
-            login_passwordElement.value = "";
+            showElementById("loginForm")
+            hideElementById("createForm")
+            setValueById("loginUsername", "")
+            setValueById("loginPassword", "")
         } else if (selectedAction === "createForm") {
-            loginElement.style.display = "none";
-            createElement.style.display = "block";
-            create_usernameElement.value = "";
-            create_passwordElement.value = "";
+            hideElementById("loginForm")
+            showElementById("createForm")
+            setValueById("createUsername", "")
+            setValueById("createPassword", "")
         } else {}
     } else {}
 }
@@ -507,13 +516,13 @@ function add(): void {
 
     if (month.value === "" || date.value === "" || start.value === "" || end.value === "" || activity.value === "") {
         showMessage("Make sure all the boxes has been filled in")
-    } else if (month && date && start && end && activity) {
+    } else {
         makeData(month.value, date.value, start.value, end.value, activity.value);
-        month.value = "";
-        date.value = "";
-        start.value = "";
-        end.value = "";
-        activity.value = "";
+        setValueById("Date_a", "");
+        setValueById("Month_a", "");
+        setValueById("Start_a", "");
+        setValueById("End_a", "");
+        setValueById("Activity_a", "");
     }
 }
 
@@ -571,9 +580,9 @@ function remove(): void {
         showMessage("Make sure all the boxes has been filled in")
     } else {
         removeData(month.value, date.value, activity.value);
-        month.value = "";
-        date.value = ""; 
-        activity.value = "";
+        setValueById("Date_r", "");
+        setValueById("Month_r", "");
+        setValueById("Activity_r", "");
     }
 }
 
@@ -590,11 +599,10 @@ function remove(): void {
 function clearCalendar(): void {
     if (localStorage.getItem(Global_username + '_data')) {
         localStorage.removeItem(Global_username + '_data');
-    showMessage("Calendar cleared for " + Global_username + "." );
+        showMessage("Calendar cleared for " + Global_username + "." );
     } else {
         showMessage(Global_username + " has no calender.")
     }
-    
 }
 
 /**
@@ -621,9 +629,8 @@ function clearCalendar(): void {
 function search_date(): void {
     const searchMonthInput: HTMLInputElement | null = document.getElementById("search_month") as HTMLInputElement;
     const searchDateInput: HTMLInputElement | null = document.getElementById("search_date") as HTMLInputElement;
-    const messageElement: HTMLElement | null = document.getElementById("message");
 
-    if (searchMonthInput && searchDateInput && messageElement) {
+    if (searchMonthInput && searchDateInput) {
         const searchMonth: string = searchMonthInput.value;
         const searchDate: string = searchDateInput.value;
         const activities: Activity[] = search_date_helper(searchMonth, searchDate);
@@ -633,9 +640,9 @@ function search_date(): void {
             activities.forEach(activity => {
                 message += "Start: " + activity.Start + ", End: " + activity.End + ", Activity: " + activity.Activity + "\n";
             });
-            messageElement.innerText = message;
+            showMessage(message);
         } else {
-            messageElement.innerText = "No activities found for " + searchMonth + " " + searchDate;
+            showMessage("No activities found for " + searchMonth + " " + searchDate);
         }
     } else {}
 }
@@ -704,9 +711,8 @@ function search_date_helper(month: string, date: string): Activity[] {
  */
 function search_month(): void {
     const searchMonthInput: HTMLInputElement | null = document.getElementById("search_month2") as HTMLInputElement;
-    const messageElement: HTMLElement | null = document.getElementById("message");
 
-    if (searchMonthInput && messageElement) {
+    if (searchMonthInput) {
         const searchMonth: string = searchMonthInput.value;
         const activities: Activity[] = search_month_helper(searchMonth);
 
@@ -715,9 +721,9 @@ function search_month(): void {
             activities.forEach(activity => {
                 message += "Date: " + activity.Date + ", Start: " + activity.Start + ", End: " + activity.End + ", Activity: " + activity.Activity + "\n";
             });
-            messageElement.innerText = message;
+            showMessage(message);
         } else {
-            messageElement.innerText = "No activities found for " + searchMonth + " " ;
+            showMessage("No activities found for " + searchMonth + " ");
         }
     } else {}
 }
@@ -784,9 +790,8 @@ function search_month_helper(month: string): Activity[] {
  */
 function search_activity(): void {
     const searchActivityInput: HTMLInputElement | null = document.getElementById("search_activity") as HTMLInputElement;
-    const messageElement: HTMLElement | null = document.getElementById("message");
 
-    if (searchActivityInput && messageElement) {
+    if (searchActivityInput) {
         const searchActivity: string = searchActivityInput.value;
         const activities: Activity[] = search_activity_helper(searchActivity);
 
@@ -795,11 +800,11 @@ function search_activity(): void {
             activities.forEach(activity => {
                 message += "Start: " + activity.Start + ", End: " + activity.End + ", Month: " + activity.Month + ", Date: " + activity.Date + "\n";
             });
-            messageElement.innerText = message;
-            searchActivityInput.value = "";
+            showMessage(message);
+            setValueById("search_activity", "")
         } else {
-            messageElement.innerText = "No activities found for " + searchActivity + " " ;
-            searchActivityInput.value = "";
+            showMessage("No activities found for " + searchActivity + " ");
+            setValueById("search_activity", "")
         }
     } else {}
 }
@@ -858,49 +863,42 @@ function search_activity_helper(activity: string): Activity[] {
  */
 function calender_selection(): void {
     const actionElement: HTMLSelectElement | null = document.getElementById("action2") as HTMLSelectElement;
-    const addElement: HTMLElement | null = document.getElementById("add");
-    const removeElement: HTMLElement | null = document.getElementById("remove");
-    const searchElement: HTMLElement | null = document.getElementById("search");
-    const search2Element: HTMLElement | null = document.getElementById("search2");
-    const search3Element: HTMLElement | null = document.getElementById("search3");
-    const messageElement: HTMLElement | null = document.getElementById("message");
 
-    if (actionElement && addElement && removeElement && searchElement && search2Element && search3Element && messageElement) {
+    if (actionElement) {
             const selectedAction: string = actionElement.value;
 
-            // Reset message
-            messageElement.innerText = "";
+            showMessage("");
 
             if (selectedAction === "add") {
-                addElement.style.display = "block";
-                removeElement.style.display = "none";
-                searchElement.style.display = "none";
-                search2Element.style.display = "none";
-                search3Element.style.display = "none";
+                showElementById("add")
+                hideElementById("remove")
+                hideElementById("search")
+                hideElementById("search2")
+                hideElementById("search3")
             } else if (selectedAction === "remove") {
-                addElement.style.display = "none";
-                removeElement.style.display = "block";
-                searchElement.style.display = "none";
-                search2Element.style.display = "none";
-                search3Element.style.display = "none";
+                hideElementById("add")
+                showElementById("remove")
+                hideElementById("search")
+                hideElementById("search2")
+                hideElementById("search3")
             } else if (selectedAction === "search") {
-                addElement.style.display = "none";
-                removeElement.style.display = "none";
-                searchElement.style.display = "block";
-                search2Element.style.display = "none";
-                search3Element.style.display = "none";
+                hideElementById("add")
+                hideElementById("remove")
+                showElementById("search")
+                hideElementById("search2")
+                hideElementById("search3")
             } else if (selectedAction === "search2") {
-                addElement.style.display = "none";
-                removeElement.style.display = "none";
-                searchElement.style.display = "none";
-                search2Element.style.display = "block";
-                search3Element.style.display = "none";
+                hideElementById("add")
+                hideElementById("remove")
+                hideElementById("search")
+                showElementById("search2")
+                hideElementById("search3")
             } else if (selectedAction === "search3") {
-                addElement.style.display = "none";
-                removeElement.style.display = "none";
-                searchElement.style.display = "none";
-                search2Element.style.display = "none";
-                search3Element.style.display = "block";
+                hideElementById("add")
+                hideElementById("remove")
+                hideElementById("search")
+                hideElementById("search2")
+                showElementById("search3")
             } else {}
     } else {}
 }
@@ -947,17 +945,11 @@ document.addEventListener("DOMContentLoaded", function (): void {
 * @returns Nothing.
 */
 function repeatActivity(month: string, date: string, start: string, end: string, activity: string, weeks: number): void {
-    const repeatElement: HTMLElement | null = document.getElementById("repeat");
-    const repeat_numElement: HTMLInputElement | null = document.getElementById("repeat_num") as HTMLInputElement;
-    const add_buttonElement: HTMLInputElement | null = document.getElementById("add_button") as HTMLInputElement;
-    const repeat_buttonElement: HTMLInputElement | null = document.getElementById("repeat_button") as HTMLInputElement;
 
     const startDate: Date = new Date(month + " " + date);
     const data_con: string = localStorage.getItem(Global_username + '_data') as string;
     const data: ActivityTable = data_con ? JSON.parse(data_con) : ph_empty(Act_table_size, probe_linear(hashfunc));
     data.probe = prob_hash;
-
-    if (repeatElement && repeat_numElement && add_buttonElement && repeat_buttonElement) {
 
         for (let i = 0; i < weeks; i++) {
             const newDate: Date = new Date(startDate.getTime() + (i * 7 * 24 * 60 * 60 * 1000)); // Incrementing date by 7 days for each week
@@ -980,13 +972,13 @@ function repeatActivity(month: string, date: string, start: string, end: string,
         }
 
     localStorage.setItem(Global_username + '_data', JSON.stringify(data));
-    repeat_numElement.value = ""; 
-    repeatElement.style.display = "none"
-    add_buttonElement.style.display = "block"
-    repeat_buttonElement.style.display = "block"
+    setValueById("repeat_num", "");
+    hideElementById("repeat");
+    showElementById("add_button");
+    showElementById("repeat_button")
     showMessage("Added the activity for " + JSON.stringify(weeks) + " weeks forward")
-    } else {}
-}
+} 
+
 
 /**
  * The function that is called when the "Confirm"
@@ -1010,11 +1002,11 @@ function repeat_helper(): void {
 
     if (month && date && start && end && activity && repeat_numElement) {
         repeatActivity(month.value, date.value, start.value, end.value, activity.value, parseInt(repeat_numElement.value));
-        month.value = "";
-        date.value = "";
-        start.value = "";
-        end.value = "";
-        activity.value = "";
+        setValueById("Date_a", "");
+        setValueById("Month_a", "");
+        setValueById("Start_a", "");
+        setValueById("End_a", "");
+        setValueById("Activity_a", "");
     } else {}
 }
 
@@ -1031,14 +1023,9 @@ function repeat_helper(): void {
  * @returns Nothing.
  */
 function repeat_button(): void {
-    const repeatElement: HTMLElement | null = document.getElementById("repeat");
-    const add_buttonElement: HTMLElement | null = document.getElementById("add_button");
-    const repeat_buttonElement: HTMLElement | null = document.getElementById("repeat_button");
-    if (repeatElement && add_buttonElement && repeat_buttonElement) {
-        repeatElement.style.display = "block";
-        add_buttonElement.style.display = "none"
-        repeat_buttonElement.style.display = "none"
-    } else {}
+    showElementById("repeat");
+    hideElementById("add_button");
+    hideElementById("repeat_button")
 }
 
 /**
