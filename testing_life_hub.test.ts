@@ -1,20 +1,51 @@
  
 
-import { ph_empty, ph_insert, probe_linear, HashFunction, ph_lookup, ph_delete } from "../ Lib/hashtables";
+import { ph_empty, ph_insert, probe_linear, ph_lookup, ph_delete } from "../ Lib/hashtables";
 //import { saveCredentials, handleActionKeyPress2 } from "./LifeHub_albin";
 
-import { ActivityTable, string_to_number , Activity,}  from "./LifeHub"
+
  
+
+const hashfunc: HashFunction<string> = key => string_to_number(key);  // 
+
+type HashFunction<K> = (key: K) => number; // The type for a hash function
+
+type ProbingFunction<K> = (length: number, key: K, i: number) => number; // The type for a probing function
+
+function string_to_number(str: string): number {
+    let sum = 0; 
+    for (let i = 0; i < str.length; i = i + 1) {
+        sum = sum + str.charCodeAt(i);
+    }
+    return sum;
+}
+
+type ProbingHashtable<K, V> = {                     // The type for a probing hashtable
+    readonly keys: Array<K | null | undefined>,     // readonly has been removed from probe  
+    readonly data: Array<V>,                        // because when the probing hashtable is 
+    probe: ProbingFunction<K>,                      // saved down with JSON stringify it 
+    size: number                                    // becomes undefined so it has to set 
+};        
+
+type ActivityTable = ProbingHashtable<string, Activity>     // Type for an activity table
+
+
+let credentials: { [key: string]: string } = {}
+
+type Activity = {               // The type for an acticity
+    Month: string,
+    Date: string
+    Start: string,
+    End: string,
+    Activity: string
+};
+
 let mock_storage: {[key: string]: ActivityTable} = {};
      // creating a storage similar to the local storage in a node.js enviroment
 
 let Global_username: string = "Albin";
      // creating a global_username that gets stored when you log in to keep the diffrent datas separate
 
-     const hashfunc: HashFunction<string> = key => string_to_number(key);  // 
-
-
-let credentials: { [key: string]: string } = {}
   
 
      function saveCredentials_changed(username: string, password: string): void 
@@ -87,7 +118,7 @@ let credentials: { [key: string]: string } = {}
                 
                 // because we dont need to convert the hashtable from the local storage on the browser we can just take the file 
                 // from our local storage
-                const data: ActivityTable = mock_storage[Global_username + '_data'] ? mock_storage[Global_username + '_data'] : ph_empty(10, probe_linear(hashfunc));
+                const data: ActivityTable = mock_storage[Global_username + '_data'] ? mock_storage[Global_username + '_data'] : ph_empty(10, probe_linear(hashfunc)); // added
                 data.probe = probe_linear(hashfunc);
                  
                 if (ph_lookup(data, id)) {
@@ -120,7 +151,7 @@ let credentials: { [key: string]: string } = {}
                     
                 }
                 */
-                function searchActivity_changed(month: string, date: string): Activity[] {
+                function search_date_helper_changed(month: string, date: string): Activity[] {
                      
                      
                     //let data: ActivityTable = localStorage.getItem(Global_username + '_data') ? JSON.parse(localStorage.getItem(Global_username + '_data') as string) : ph_empty(10, probe_linear(hashfunc));
@@ -159,24 +190,30 @@ test("create a user", () => {
 test("make some data", () => {
     
     makeData_changed("january", "23", "13:00", "15:00", "Fotboll");
+
     const calendar_data: ActivityTable = mock_storage[Global_username + '_data'];
+
     expect(calendar_data.data).toContainEqual({Month: "january", Date: "23", Start: "13:00", End: "15:00", Activity: "Fotboll"})
 });
 
 test("add a activity", () => {
+    add_changed("january", "23", "13:00", "14:00", "Football");
 
-        
-        add_changed("january", "23", "13:00", "14:00", "Football");
-        const calendar_data: ActivityTable = mock_storage[Global_username + '_data']; // accesing the correct users data
-        expect(calendar_data.data).toContainEqual({Month: "january", Date: "23", Start: "13:00", End: "14:00", Activity: "Football"});
+    const calendar_data: ActivityTable = mock_storage[Global_username + '_data']; // accesing the correct users data
+
+    expect(calendar_data.data).toContainEqual({Month: "january", Date: "23", Start: "13:00", End: "14:00", Activity: "Football"});
 
 
 } );
 
 test("remove activity", () => {
+
     add_changed("january", "25", "13:00", "14:00", "Handball");
-        const calendar_data: ActivityTable = mock_storage[Global_username + '_data']; // accesing the correct users data
-        expect(calendar_data.data).toContainEqual({Month: "january", Date: "25", Start: "13:00", End: "14:00", Activity: "Handball"});
+
+    const calendar_data: ActivityTable = mock_storage[Global_username + '_data']; // accesing the correct users data
+
+    expect(calendar_data.data).toContainEqual({Month: "january", Date: "25", Start: "13:00", End: "14:00", Activity: "Handball"});
+
     remove_changed("januray", "25", "Handball");
 
     expect(calendar_data).toBeUndefined;
@@ -185,9 +222,9 @@ test("remove activity", () => {
 });
 
 test("search for activity ", () => {
+
     add_changed("january", "27", "13:00", "14:00", "Icehockey")
 
-    expect(searchActivity_changed("january", "27")).toContainEqual({Month: "january", Date: "27", Start: "13:00", End: "14:00", Activity: "Icehockey"});
+    expect(search_date_helper_changed("january", "27")).toContainEqual({Month: "january", Date: "27", Start: "13:00", End: "14:00", Activity: "Icehockey"});
 });
 
- 
