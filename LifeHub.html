@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login System</title>
+    
+    <style>
+        /* Gemensam stil för formulär */
+        input[type="text"],
+        input[type="password"],
+        select,
+        button {
+            margin: 5px;
+            padding: 5px;
+            width: 200px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* Stil för att centrera innehållet */
+        #login,
+        #logout,
+        #kalender {
+            text-align: center;
+            margin: auto;
+            margin-top: 50px;
+            width: 50%;
+        }
+
+        /* Stil för att dölja eller visa element */
+        #loginForm,
+        #createForm,
+        #logout,
+        #add,
+        #remove,
+        #search,
+        #search2,
+        #search3 {
+            display: none;
+        }
+
+        #loginForm,
+        #createForm,
+        #add,
+        #remove,
+        #search,
+        #search2,
+        #search3 {
+            display: none;
+        }
+
+        /* Stil för att visa aktivt valt element */
+        #action,
+        #action2 {
+            margin-top: 20px;
+        }
+
+        /* Stil för meddelandet */
+        #message {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+
+</head>
+<body>
+    <div id="login">
+        <div>
+            <label for="action">Do you want to login or create a new user ?</label>
+            <select id="action" onchange="login_create_selection()">
+                <option value="loginForm">Login</option>
+                <option value="createForm">Create user</option>
+            </select>
+        </div>
+        <div id="loginForm" style="display: block;">
+            <input type="text" id="loginUsername" placeholder="Enter username">
+            <input type="password" id="loginPassword" placeholder="Enter password">
+            <button onclick="login()">Login</button>
+        </div>
+        <div id="createForm" style="display: none;">
+            <input type="text" id="createUsername" placeholder="Enter new username">
+            <input type="password" id="createPassword" placeholder="Enter new password">
+            <button onclick="createUser()">Create User</button>
+        </div>
+    </div>
+
+    <div id="logout" style="display: none;">
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <div id="kalender" style="display: none;">
+    <div>
+        <label for="action2">Do you want to add, remove, or search for activity?</label>
+        <select id="action2" onchange="calender_selection()">
+            <option value="add">Add activity</option>
+            <option value="remove">Remove activity</option>
+            <option value="search">Search date</option>
+            <option value="search2">Search month</option>
+            <option value="search3">Search activity</option>
+        </select>
+    </div>
+    <div id="add" style="display: block;">
+        <select id="Month_a">
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+        </select>
+        <select id="Date_a">
+            <!-- Days will be added dynamically via JavaScript -->
+        </select>
+        <input type="time" id="Start_a" placeholder="Enter start time">
+        <input type="time" id="End_a" placeholder="Enter end time">
+        <input type="text" id="Activity_a" placeholder="Enter activity">
+        <div id="add_button" style="display: block;">
+            <button onclick="add()">Add activity</button>
+        </div>
+        <div id="repeat_button" style="display: block;">
+            <button onclick="repeat_button()">Repeat Activity</button>
+        </div>
+        <div id="repeat", style="display: none;">
+            <input type="text" id="repeat_num" placeholder="How many weeks to repeat?">
+            <button onclick="repeat_helper()">Confirm</button>
+        </div>
+    </div>
+    <div id="remove" style="display: none;">
+        <select id="Month_r">
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+        </select>
+        <select id="Date_r">
+            <!-- Days will be added dynamically via JavaScript -->
+        </select>
+        <input type="text" id="Activity_r" placeholder="Enter activity">
+        <button onclick="remove()">Remove activity</button> 
+    </div>
+    <div id="search" style="display: none;">
+        <select id="search_month">
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+        </select>
+        <select id="search_date">
+            <!-- Days will be added dynamically via JavaScript -->
+        </select>
+        <button onclick="search_date()">Search activity</button> 
+    </div>
+    <div id="search2" style="display: none;">
+        <select id="search_month2">
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+        </select>
+        <button onclick="search_month()">Search activity</button>
+    </div>
+    <div id="search3" style="display: none;">
+        <input type="text" id="search_activity" placeholder="Enter activity">
+        <button onclick="search_activity()">Search activity</button> 
+    </div>
+
+    <button onclick="clearCalendar()">Clear Calendar</button>
+    </div>
+
+
+    <p id="message"></p>
+
+    <script src="LifeHub.js"></script>
+</body>
+</html>
